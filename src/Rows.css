@@ -1,0 +1,13 @@
+.row-container {
+  padding: 0.1em;
+  display: flex;
+  justify-content: right;
+  align-items: end;
+  flex-wrap: wrap;
+  width: 180px;
+  column-gap: 2px;
+}
+
+.rows-header {
+  text-align: left;
+}

@@ -1,0 +1,13 @@
+
+.factory-container {
+  height: 75px;
+  width: 75px;
+  border-radius: 50%;
+  background-color: whitesmoke;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 2px;
+  column-gap: 4px;
+}

@@ -1,0 +1,14 @@
+.factories-container {
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 8px;
+}
+
+.factories-container div:nth-child(6) div{
+  background-color: initial;
+  width: 150px;
+  align-self: flex-end;
+}
