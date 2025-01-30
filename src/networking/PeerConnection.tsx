@@ -9,6 +9,26 @@ interface ZustandState {
   setZustandConnection: (zustandConnection: DataConnection) => void;
 }
 
+const baseUrl = import.meta.env.VITE_BASE_URL || "garbage";
+
+const userName = import.meta.env.VITE_TURN_SERVER_USERNAME || "garbage";
+
+const credential = import.meta.env.VITE_TURN_SERVER_CREDENTIAL || "garbage";
+
+const hello = import.meta.env.HELLO || "garbage";
+const yo = import.meta.env.YO || "garbage";
+
+console.log(`hello ${hello}`);
+console.log(`yo ${yo}`);
+
+console.log(
+  "VITE_TURN_SERVER_USERNAME",
+  import.meta.env.VITE_TURN_SERVER_USERNAME,
+);
+
+console.log("VITE_BASE_URL", import.meta.env.VITE_BASE_URL);
+console.log("var", import.meta.env.VITE_TEST);
+
 export const usePeerJsStore = create<ZustandState>((set) => ({
   zustandConnection: undefined,
   setZustandConnection: (zustandConnection: DataConnection) =>
@@ -39,7 +59,7 @@ function PeerConnection({
   setPlayerNumber: (playerNumber: number) => void;
 }) {
   const setZustandConnection = usePeerJsStore(
-    (state) => state.setZustandConnection
+    (state) => state.setZustandConnection,
   );
 
   const [myPeerId, setMyPeerId] = useState("");
@@ -48,7 +68,37 @@ function PeerConnection({
   const [peer, setPeer] = useState<undefined | Peer>(undefined);
 
   useEffect(() => {
-    setPeer(new Peer());
+    setPeer(
+      new Peer({
+        config: {
+          iceServers: [
+            {
+              urls: "stun:stun.relay.metered.ca:80",
+            },
+            {
+              urls: "turn:global.relay.metered.ca:80",
+              username: userName,
+              credential: credential,
+            },
+            {
+              urls: "turn:global.relay.metered.ca:80?transport=tcp",
+              username: userName,
+              credential: credential,
+            },
+            {
+              urls: "turn:global.relay.metered.ca:443",
+              username: userName,
+              credential: credential,
+            },
+            {
+              urls: "turns:global.relay.metered.ca:443?transport=tcp",
+              username: userName,
+              credential: credential,
+            },
+          ],
+        },
+      }),
+    );
   }, []);
 
   useEffect(() => {
@@ -80,7 +130,7 @@ function PeerConnection({
           peerGameState: getParsedGameState(data as string),
         });
       });
-      setTimeout(() => sendInitialGameToPeer(conn), 1000);
+      setTimeout(() => sendInitialGameToPeer(conn), 5000);
     });
   }, [peer]);
 
@@ -91,7 +141,7 @@ function PeerConnection({
       setIsConnected(true);
       setPlayerNumber(0);
     } else {
-      console.log("no connection", conn);
+      console.log("no connection found", conn);
     }
   };
 
@@ -106,13 +156,12 @@ function PeerConnection({
           className={"share-button"}
           key={`share-game`}
           onClick={() => {
-            const shareLink =
-              import.meta.env.VITE_BASE_URL + "/#/game/" + myPeerId;
+            const shareLink = `${baseUrl}/#/game/${myPeerId}`;
             navigator.clipboard
               .writeText(shareLink)
               .then(() => console.log("successfully copying to clipboard"))
               .catch((error) =>
-                console.log("errored copying to clipboard", error)
+                console.log("errored copying to clipboard", error),
               );
             navigator
               .share({
@@ -123,7 +172,7 @@ function PeerConnection({
               .catch((error) => console.log("errored sharing", error));
           }}
         >
-          Click and share to play with friend
+          click and share to play with friend
         </button>
       </div>
     );
