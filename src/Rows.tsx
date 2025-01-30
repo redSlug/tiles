@@ -28,7 +28,7 @@ function Rows({
   function rowIsDisabled(
     row: Row,
     source: Source | undefined,
-    isProcessing: boolean,
+    isProcessing: boolean
   ): boolean {
     return (
       playerNumber === state.turnNumber % 2 ||
@@ -58,7 +58,7 @@ function Rows({
     row: Row,
     colIndex: number,
     source: Source | undefined,
-    isProcessing: boolean,
+    isProcessing: boolean
   ): string {
     if (row.tileColor === undefined || colIndex < row.openSpaceCount) {
       if (!rowIsDisabled(row, source, isProcessing)) {
@@ -73,7 +73,12 @@ function Rows({
 
   return (
     <div className={"rows-container"}>
-      <OverflowRow tiles={overflowTiles} />
+      <OverflowRow
+        tiles={overflowTiles}
+        playerNumber={playerNumber}
+        turnNumber={state.turnNumber}
+        source={state.source}
+      />
       {rows.map((row: Row, rowIndex: number) => (
         <div className={"row-container"} key={rowIndex}>
           {Array.from(Array(rowIndex + 1)).map((_, colIndex) => (
@@ -84,7 +89,7 @@ function Rows({
                   row,
                   colIndex,
                   source,
-                  isProcessing,
+                  isProcessing
                 )}
                 onClick={() => handleRowClick(rowIndex)}
                 value={undefined}
