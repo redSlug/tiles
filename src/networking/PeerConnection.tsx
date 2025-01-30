@@ -9,6 +9,11 @@ interface ZustandState {
   setZustandConnection: (zustandConnection: DataConnection) => void;
 }
 
+const baseUrl = import.meta.env.VITE_BASE_URL || "garbage";
+
+const username = import.meta.env.VITE_TURN_SERVER_USERNAME || "garbage";
+const credential = import.meta.env.VITE_TURN_SERVER_CREDENTIAL || "garbage";
+
 export const usePeerJsStore = create<ZustandState>((set) => ({
   zustandConnection: undefined,
   setZustandConnection: (zustandConnection: DataConnection) =>
@@ -39,7 +44,7 @@ function PeerConnection({
   setPlayerNumber: (playerNumber: number) => void;
 }) {
   const setZustandConnection = usePeerJsStore(
-    (state) => state.setZustandConnection
+    (state) => state.setZustandConnection,
   );
 
   const [myPeerId, setMyPeerId] = useState("");
@@ -48,7 +53,37 @@ function PeerConnection({
   const [peer, setPeer] = useState<undefined | Peer>(undefined);
 
   useEffect(() => {
-    setPeer(new Peer());
+    setPeer(
+      new Peer({
+        config: {
+          iceServers: [
+            {
+              urls: "stun:stun.relay.metered.ca:80",
+            },
+            {
+              urls: "turn:global.relay.metered.ca:80",
+              username,
+              credential,
+            },
+            {
+              urls: "turn:global.relay.metered.ca:80?transport=tcp",
+              username,
+              credential,
+            },
+            {
+              urls: "turn:global.relay.metered.ca:443",
+              username,
+              credential,
+            },
+            {
+              urls: "turns:global.relay.metered.ca:443?transport=tcp",
+              username,
+              credential,
+            },
+          ],
+        },
+      }),
+    );
   }, []);
 
   useEffect(() => {
@@ -80,7 +115,7 @@ function PeerConnection({
           peerGameState: getParsedGameState(data as string),
         });
       });
-      setTimeout(() => sendInitialGameToPeer(conn), 1000);
+      setTimeout(() => sendInitialGameToPeer(conn), 5000);
     });
   }, [peer]);
 
@@ -91,7 +126,7 @@ function PeerConnection({
       setIsConnected(true);
       setPlayerNumber(0);
     } else {
-      console.log("no connection", conn);
+      console.log("no connection found", conn);
     }
   };
 
@@ -106,13 +141,12 @@ function PeerConnection({
           className={"share-button"}
           key={`share-game`}
           onClick={() => {
-            const shareLink =
-              import.meta.env.VITE_BASE_URL + "/#/game/" + myPeerId;
+            const shareLink = `${baseUrl}/#/game/${myPeerId}`;
             navigator.clipboard
               .writeText(shareLink)
               .then(() => console.log("successfully copying to clipboard"))
               .catch((error) =>
-                console.log("errored copying to clipboard", error)
+                console.log("errored copying to clipboard", error),
               );
             navigator
               .share({
