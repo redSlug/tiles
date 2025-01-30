@@ -39,7 +39,7 @@ function PeerConnection({
   setPlayerNumber: (playerNumber: number) => void;
 }) {
   const setZustandConnection = usePeerJsStore(
-    (state) => state.setZustandConnection,
+    (state) => state.setZustandConnection
   );
 
   const [myPeerId, setMyPeerId] = useState("");
@@ -108,6 +108,12 @@ function PeerConnection({
           onClick={() => {
             const shareLink =
               import.meta.env.VITE_BASE_URL + "/#/game/" + myPeerId;
+            navigator.clipboard
+              .writeText(shareLink)
+              .then(() => console.log("successfully copying to clipboard"))
+              .catch((error) =>
+                console.log("errored copying to clipboard", error)
+              );
             navigator
               .share({
                 title: "tiles game",
@@ -115,12 +121,6 @@ function PeerConnection({
               })
               .then(() => console.log("successfully shared"))
               .catch((error) => console.log("errored sharing", error));
-            navigator.clipboard
-              .writeText(shareLink)
-              .then(() => console.log("successfully copying to clipboard"))
-              .catch((error) =>
-                console.log("errored copying to clipboard", error),
-              );
           }}
         >
           Click and share to play with friend
