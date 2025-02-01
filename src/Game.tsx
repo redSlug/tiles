@@ -1,4 +1,4 @@
-import "./App.css";
+import "./App.css"
 import "./Game.css";
 
 import { useGameState } from "./state/useGameState.ts";
