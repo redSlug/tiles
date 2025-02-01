@@ -1,6 +1,6 @@
-import "./App.css";
-import { HashRouter, Route, Routes } from "react-router-dom";
-import Game from "./Game.tsx";
+import './App.css';
+import { HashRouter, Route, Routes } from 'react-router-dom';
+import Game from './Game.tsx';
 
 function App() {
   return (

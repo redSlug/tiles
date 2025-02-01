@@ -1,7 +1,7 @@
-import "./Factories.css";
-import Factory from "./Factory.tsx";
-import { Action, FactoryCircle, GameState } from "./types/all.ts";
-import { DataConnection } from "peerjs";
+import './Factories.css';
+import Factory from './Factory.tsx';
+import { Action, FactoryCircle, GameState } from './types/all.ts';
+import { DataConnection } from 'peerjs';
 
 function Factories({
   state,

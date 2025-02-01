@@ -1,4 +1,4 @@
-import { DataConnection } from "peerjs";
+import { DataConnection } from 'peerjs';
 
 export type Row = {
   openSpaceCount: number;
@@ -45,12 +45,12 @@ export type GameState = {
 };
 
 export type SetPeerGameStateAction = {
-  type: "set_peer_game_state";
+  type: 'set_peer_game_state';
   peerGameState: GameState;
 };
 
 export type ClickSourceAction = {
-  type: "click_source";
+  type: 'click_source';
   circleNumber: number;
   tileColor: string;
   tileCount: number;
@@ -59,14 +59,14 @@ export type ClickSourceAction = {
 };
 
 export type ClickDestinationAction = {
-  type: "click_destination";
+  type: 'click_destination';
   rowNumber: number;
   peerDataConnection: DataConnection;
   playerNumber: number;
 };
 
 export type ClickRoundEndAction = {
-  type: "click_round_end";
+  type: 'click_round_end';
 };
 
 export type Action =

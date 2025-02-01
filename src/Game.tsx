@@ -1,55 +1,44 @@
-import "./App.css"
-import "./Game.css";
+import './App.css';
+import './Game.css';
 
-import { useGameState } from "./state/useGameState.ts";
-import PeerConnection, {
-  usePeerJsStore,
-} from "./networking/PeerConnection.tsx";
-import { useEffect, useState } from "react";
-import Rows from "./Rows.tsx";
-import { useParams } from "react-router-dom";
-import Factories from "./Factories.tsx";
-import FinalRows from "./FinalRows.tsx";
-import { getInitialState } from "./state/initialGame.ts";
+import { useGameState } from './state/useGameState.ts';
+import { useState } from 'react';
+import Rows from './Rows.tsx';
+import { useParams } from 'react-router-dom';
+import Factories from './Factories.tsx';
+import FinalRows from './FinalRows.tsx';
+import { getInitialState } from './state/initialGame.ts';
+import { usePeerJsStore } from './networking/PeerStore.ts';
+import PeerConnection from './networking/PeerConnection.tsx';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
   const { shareCode } = useParams();
 
-  const zustandConnection = usePeerJsStore((state) => state.zustandConnection);
-  useEffect(() => {
-    // this is working
-    return () => {
-      // this happens upon refresh
-      console.log("disconnecct on refresh");
-
-      zustandConnection?.close();
-    };
-  }, []);
-
+  const zustandConnection = usePeerJsStore(state => state.zustandConnection);
   const [playerNumber, setPlayerNumber] = useState(1);
 
   function getTitleString(): string {
     if (state.isGameOver) {
       if (state.playerScores[0] == state.playerScores[1]) {
-        return "game over - tie game";
+        return 'game over - tie game';
       }
       if (
         state.playerScores[playerNumber] >
         state.playerScores[playerNumber === 0 ? 1 : 0]
       ) {
-        return "game over - you win!";
+        return 'game over - you win!';
       }
-      return "game over - you lose!";
+      return 'game over - you lose!';
     }
 
     if (zustandConnection === undefined) {
-      return "not connected";
+      return 'not connected';
     }
 
     return playerNumber === state.turnNumber % 2
-      ? "waiting for friend"
-      : "your turn";
+      ? 'waiting for friend'
+      : 'your turn';
   }
   const titleString = getTitleString();
   if (zustandConnection === undefined) {
@@ -67,8 +56,8 @@ function Game() {
 
   return (
     <div className="game-container">
-      <h1 className={"title-string"}>{titleString}</h1>
-      <div className={"break"}></div>
+      <h1 className={'title-string'}>{titleString}</h1>
+      <div className={'break'}></div>
       <Factories
         state={state}
         gameDispatch={dispatch}
@@ -76,10 +65,10 @@ function Game() {
         playerNumber={playerNumber}
       />
 
-      <div className={"break"}></div>
+      <div className={'break'}></div>
 
-      <div className={"destinations"}>
-        <div className={"player-board"}>
+      <div className={'destinations'}>
+        <div className={'player-board'}>
           <Rows
             gameDispatch={dispatch}
             peerDataConnection={zustandConnection!}
@@ -89,12 +78,12 @@ function Game() {
           />
           <FinalRows
             finalRows={state.finalPlayerRows[playerNumber]}
-            playerName={"your"}
+            playerName={'your'}
             playerScore={state.playerScores[playerNumber]}
           />
         </div>
-        <h2 className={"divider"} />
-        <div className={"player-board"}>
+        <h2 className={'divider'} />
+        <div className={'player-board'}>
           <Rows
             gameDispatch={dispatch}
             peerDataConnection={zustandConnection!}

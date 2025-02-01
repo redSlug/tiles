@@ -7,8 +7,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint tiles",
-    "validate": "prettier . --write",
+    "lint": "eslint . --max-warnings 1",
+    "prettier:check": "prettier . --check",
+    "prettier:write": "prettier . --write",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

@@ -1,10 +1,10 @@
-import { Action, GameState, OverFlowTile, Row, Source } from "./types/all.ts";
-import { DataConnection } from "peerjs";
-import React, { useState } from "react";
-import "./Rows.css";
-import "./components/Tile.css";
-import Tile from "./components/Tile.tsx";
-import OverflowRow from "./OverflowRow.tsx";
+import { Action, GameState, OverFlowTile, Row, Source } from './types/all.ts';
+import { DataConnection } from 'peerjs';
+import React, { useState } from 'react';
+import './Rows.css';
+import './components/Tile.css';
+import Tile from './components/Tile.tsx';
+import OverflowRow from './OverflowRow.tsx';
 
 function Rows({
   gameDispatch,
@@ -22,13 +22,12 @@ function Rows({
   const { source, playerRows } = state as GameState;
 
   const rows = playerRows[playerNumber];
-
   const [isProcessing, setIsProcessing] = useState(false);
 
   function rowIsDisabled(
     row: Row,
     source: Source | undefined,
-    isProcessing: boolean
+    isProcessing: boolean,
   ): boolean {
     return (
       playerNumber === state.turnNumber % 2 ||
@@ -36,7 +35,7 @@ function Rows({
       source == undefined ||
       row.openSpaceCount === 0 ||
       (row.tileColor != undefined && row.tileColor != source!.tileColor) ||
-      source!.tileColor === "white"
+      source!.tileColor === 'white'
     );
   }
 
@@ -46,7 +45,7 @@ function Rows({
     }
     setIsProcessing(true);
     gameDispatch({
-      type: "click_destination",
+      type: 'click_destination',
       rowNumber: index,
       peerDataConnection: peerDataConnection!,
       playerNumber,
@@ -58,21 +57,21 @@ function Rows({
     row: Row,
     colIndex: number,
     source: Source | undefined,
-    isProcessing: boolean
+    isProcessing: boolean,
   ): string {
     if (row.tileColor === undefined || colIndex < row.openSpaceCount) {
       if (!rowIsDisabled(row, source, isProcessing)) {
         return `empty-tile clickable-row`;
       }
 
-      return "empty-tile";
+      return 'empty-tile';
     }
 
     return `${row.tileColor}-tiles`;
   }
 
   return (
-    <div className={"rows-container"}>
+    <div className={'rows-container'}>
       <OverflowRow
         tiles={overflowTiles}
         playerNumber={playerNumber}
@@ -80,7 +79,7 @@ function Rows({
         source={state.source}
       />
       {rows.map((row: Row, rowIndex: number) => (
-        <div className={"row-container"} key={rowIndex}>
+        <div className={'row-container'} key={rowIndex}>
           {Array.from(Array(rowIndex + 1)).map((_, colIndex) => (
             <React.Fragment key={colIndex}>
               <Tile
@@ -89,7 +88,7 @@ function Rows({
                   row,
                   colIndex,
                   source,
-                  isProcessing
+                  isProcessing,
                 )}
                 onClick={() => handleRowClick(rowIndex)}
                 value={undefined}
@@ -97,7 +96,7 @@ function Rows({
             </React.Fragment>
           ))}
         </div>
-      ))}{" "}
+      ))}{' '}
     </div>
   );
 }

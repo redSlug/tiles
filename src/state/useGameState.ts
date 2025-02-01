@@ -1,30 +1,30 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   GameState,
   Action,
   ClickSourceAction,
   SetPeerGameStateAction,
   ClickDestinationAction,
-} from "../types/all.ts";
+} from '../types/all.ts';
 
 function clickRouterReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
-    case "click_source":
+    case 'click_source':
       return clickSource(state, action);
-    case "click_destination":
+    case 'click_destination':
       return clickDestination(state, action);
-    case "click_round_end":
+    case 'click_round_end':
       return state;
-    case "set_peer_game_state":
-      console.log("setting peer game state", action.peerGameState);
+    case 'set_peer_game_state':
+      console.log('setting peer game state', action.peerGameState);
       return setPeerGameState(action);
     default:
-      throw new Error("Invalid action type");
+      throw new Error('Invalid action type');
   }
 }
 
 function setPeerGameState(action: SetPeerGameStateAction) {
-  console.log("peer game state to set", action.peerGameState);
+  console.log('peer game state to set', action.peerGameState);
   return { ...action.peerGameState };
 }
 
@@ -36,23 +36,23 @@ function clickDestination(state: GameState, action: ClickDestinationAction) {
   const lastCircleNumber = 5;
 
   const whiteTileIndex = sourceTiles.findIndex(
-    (tile) => tile.tileColor === "white",
+    tile => tile.tileColor === 'white',
   );
   if (circleNumber === lastCircleNumber && whiteTileIndex > -1) {
     sourceTiles.splice(whiteTileIndex);
     const lastOverflowIndex = state.playerOverflowRows[playerNumber].findIndex(
-      (tile) => tile.tileColor === undefined,
+      tile => tile.tileColor === undefined,
     );
     state.playerOverflowRows[playerNumber][lastOverflowIndex].tileColor =
-      "white";
+      'white';
   }
 
   const currentRowData = state.playerRows[playerNumber][rowNumber];
   let openSpaceCount = currentRowData.openSpaceCount - tileCount;
   if (openSpaceCount < 0) {
-    let lastOpenOverflowIndex = state.playerOverflowRows[
+    const lastOpenOverflowIndex = state.playerOverflowRows[
       playerNumber
-    ].findIndex((tile) => tile.tileColor === undefined);
+    ].findIndex(tile => tile.tileColor === undefined);
     let tileCountToPlaceInOverflow = Math.abs(openSpaceCount);
 
     for (
@@ -97,11 +97,11 @@ function clickDestination(state: GameState, action: ClickDestinationAction) {
     circles[circleNumber].tiles = [];
   } else {
     circles[lastCircleNumber].tiles = circles[lastCircleNumber].tiles.filter(
-      (tile) => tile.tileColor !== tileColor,
+      tile => tile.tileColor !== tileColor,
     );
   }
 
-  const gameOver = circles.every((c) => c.tiles.length == 0);
+  const gameOver = circles.every(c => c.tiles.length == 0);
 
   let player0Score = 0;
   let player1Score = 0;
@@ -109,10 +109,10 @@ function clickDestination(state: GameState, action: ClickDestinationAction) {
   if (gameOver) {
     isGameOver = true;
     player0Score = state.playerRows[0].filter(
-      (row) => row.openSpaceCount === 0,
+      row => row.openSpaceCount === 0,
     ).length;
     player1Score = state.playerRows[1].filter(
-      (row) => row.openSpaceCount === 0,
+      row => row.openSpaceCount === 0,
     ).length;
   }
 
@@ -128,18 +128,18 @@ function clickDestination(state: GameState, action: ClickDestinationAction) {
   try {
     action.peerDataConnection.send(JSON.stringify(newGameState));
   } catch (error) {
-    console.error("could not send to peer", {
+    console.error('could not send to peer', {
       error,
       connection: action.peerDataConnection,
     });
   }
 
-  console.log("sent newGameState in click destination", newGameState);
+  console.log('sent newGameState in click destination', newGameState);
   return newGameState;
 }
 
 function clickSource(state: GameState, action: ClickSourceAction) {
-  console.log("in click source", state.source);
+  console.log('in click source', state.source);
   return {
     ...state,
     source: {

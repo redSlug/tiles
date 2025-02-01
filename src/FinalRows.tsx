@@ -1,7 +1,7 @@
-import { FinalTile } from "./types/all.ts";
-import "./FinalRows.css";
-import "./components/Tile.css";
-import Tile from "./components/Tile.tsx";
+import { FinalTile } from './types/all.ts';
+import './FinalRows.css';
+import './components/Tile.css';
+import Tile from './components/Tile.tsx';
 
 function Rows({
   finalRows,
@@ -20,8 +20,8 @@ function Rows({
   }
 
   return (
-    <div className={"final-rows-container"}>
-      <div className={"score"}>
+    <div className={'final-rows-container'}>
+      <div className={'score'}>
         {playerName} score: {playerScore}
       </div>
       {finalRows.map((finalRow: Array<FinalTile>, rowIndex: number) => (

@@ -1,4 +1,4 @@
-import { FactoryCircle, GameState } from "../types/all.ts";
+import { FactoryCircle, GameState } from '../types/all.ts';
 
 function getBagOfTiles(): Array<string> {
   const duplicate = (arr: Array<string>, times: number) =>
@@ -6,7 +6,7 @@ function getBagOfTiles(): Array<string> {
       .fill([...arr])
       .reduce((a, b) => a.concat(b));
   const bagOfTiles = duplicate(
-    ["orange", "red", "blue", "purple", "green"],
+    ['orange', 'red', 'blue', 'purple', 'green'],
     20,
   );
   bagOfTiles.sort(() => Math.random() - 0.5);
@@ -36,7 +36,7 @@ function getCircles(tiles: Array<string>): Array<FactoryCircle> {
     circles.push(getCircle(currentTiles));
   }
 
-  circles.push({ tiles: [{ tileColor: "white", tileCount: 1 }] });
+  circles.push({ tiles: [{ tileColor: 'white', tileCount: 1 }] });
   return circles;
 }
 
@@ -86,76 +86,76 @@ export function getInitialState(): GameState {
     finalPlayerRows: [
       [
         [
-          { tileColor: "purple", isFilled: false },
-          { tileColor: "red", isFilled: false },
-          { tileColor: "orange", isFilled: false },
-          { tileColor: "green", isFilled: false },
-          { tileColor: "blue", isFilled: false },
+          { tileColor: 'purple', isFilled: false },
+          { tileColor: 'red', isFilled: false },
+          { tileColor: 'orange', isFilled: false },
+          { tileColor: 'green', isFilled: false },
+          { tileColor: 'blue', isFilled: false },
         ],
         [
-          { tileColor: "blue", isFilled: false },
-          { tileColor: "purple", isFilled: false },
-          { tileColor: "red", isFilled: false },
-          { tileColor: "orange", isFilled: false },
-          { tileColor: "green", isFilled: false },
+          { tileColor: 'blue', isFilled: false },
+          { tileColor: 'purple', isFilled: false },
+          { tileColor: 'red', isFilled: false },
+          { tileColor: 'orange', isFilled: false },
+          { tileColor: 'green', isFilled: false },
         ],
         [
-          { tileColor: "green", isFilled: false },
-          { tileColor: "blue", isFilled: false },
-          { tileColor: "purple", isFilled: false },
-          { tileColor: "red", isFilled: false },
-          { tileColor: "orange", isFilled: false },
+          { tileColor: 'green', isFilled: false },
+          { tileColor: 'blue', isFilled: false },
+          { tileColor: 'purple', isFilled: false },
+          { tileColor: 'red', isFilled: false },
+          { tileColor: 'orange', isFilled: false },
         ],
         [
-          { tileColor: "orange", isFilled: false },
-          { tileColor: "green", isFilled: false },
-          { tileColor: "blue", isFilled: false },
-          { tileColor: "purple", isFilled: false },
-          { tileColor: "red", isFilled: false },
+          { tileColor: 'orange', isFilled: false },
+          { tileColor: 'green', isFilled: false },
+          { tileColor: 'blue', isFilled: false },
+          { tileColor: 'purple', isFilled: false },
+          { tileColor: 'red', isFilled: false },
         ],
         [
-          { tileColor: "red", isFilled: false },
-          { tileColor: "orange", isFilled: false },
-          { tileColor: "green", isFilled: false },
-          { tileColor: "blue", isFilled: false },
-          { tileColor: "purple", isFilled: false },
+          { tileColor: 'red', isFilled: false },
+          { tileColor: 'orange', isFilled: false },
+          { tileColor: 'green', isFilled: false },
+          { tileColor: 'blue', isFilled: false },
+          { tileColor: 'purple', isFilled: false },
         ],
       ],
       [
         [
-          { tileColor: "purple", isFilled: false },
-          { tileColor: "red", isFilled: false },
-          { tileColor: "orange", isFilled: false },
-          { tileColor: "green", isFilled: false },
-          { tileColor: "blue", isFilled: false },
+          { tileColor: 'purple', isFilled: false },
+          { tileColor: 'red', isFilled: false },
+          { tileColor: 'orange', isFilled: false },
+          { tileColor: 'green', isFilled: false },
+          { tileColor: 'blue', isFilled: false },
         ],
         [
-          { tileColor: "blue", isFilled: false },
-          { tileColor: "purple", isFilled: false },
-          { tileColor: "red", isFilled: false },
-          { tileColor: "orange", isFilled: false },
-          { tileColor: "green", isFilled: false },
+          { tileColor: 'blue', isFilled: false },
+          { tileColor: 'purple', isFilled: false },
+          { tileColor: 'red', isFilled: false },
+          { tileColor: 'orange', isFilled: false },
+          { tileColor: 'green', isFilled: false },
         ],
         [
-          { tileColor: "green", isFilled: false },
-          { tileColor: "blue", isFilled: false },
-          { tileColor: "purple", isFilled: false },
-          { tileColor: "red", isFilled: false },
-          { tileColor: "orange", isFilled: false },
+          { tileColor: 'green', isFilled: false },
+          { tileColor: 'blue', isFilled: false },
+          { tileColor: 'purple', isFilled: false },
+          { tileColor: 'red', isFilled: false },
+          { tileColor: 'orange', isFilled: false },
         ],
         [
-          { tileColor: "orange", isFilled: false },
-          { tileColor: "green", isFilled: false },
-          { tileColor: "blue", isFilled: false },
-          { tileColor: "purple", isFilled: false },
-          { tileColor: "red", isFilled: false },
+          { tileColor: 'orange', isFilled: false },
+          { tileColor: 'green', isFilled: false },
+          { tileColor: 'blue', isFilled: false },
+          { tileColor: 'purple', isFilled: false },
+          { tileColor: 'red', isFilled: false },
         ],
         [
-          { tileColor: "red", isFilled: false },
-          { tileColor: "orange", isFilled: false },
-          { tileColor: "green", isFilled: false },
-          { tileColor: "blue", isFilled: false },
-          { tileColor: "purple", isFilled: false },
+          { tileColor: 'red', isFilled: false },
+          { tileColor: 'orange', isFilled: false },
+          { tileColor: 'green', isFilled: false },
+          { tileColor: 'blue', isFilled: false },
+          { tileColor: 'purple', isFilled: false },
         ],
       ],
     ],

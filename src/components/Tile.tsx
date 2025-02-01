@@ -1,4 +1,4 @@
-import "./Tile.css";
+import './Tile.css';
 
 function Tile({
   isDisabled,
@@ -8,7 +8,7 @@ function Tile({
 }: {
   isDisabled: boolean;
   className: string;
-  onClick: Function;
+  onClick: () => void;
   value: string | undefined;
 }) {
   return (

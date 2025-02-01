@@ -1,9 +1,9 @@
-import "./Factory.css";
-import "./components/Tile.css";
-import { Action, FactoryColorGroup } from "./types/all.ts";
-import { DataConnection } from "peerjs";
-import React, { useState } from "react";
-import Tile from "./components/Tile.tsx";
+import './Factory.css';
+import './components/Tile.css';
+import { Action, FactoryColorGroup } from './types/all.ts';
+import { DataConnection } from 'peerjs';
+import React, { useState } from 'react';
+import Tile from './components/Tile.tsx';
 
 function Factory({
   circleNumber,
@@ -29,7 +29,7 @@ function Factory({
   async function handleFactoryClick(index: number, group: FactoryColorGroup) {
     setClickedColor(group.tileColor);
     gameDispatch({
-      type: "click_source",
+      type: 'click_source',
       circleNumber,
       tileColor: group.tileColor,
       tileCount: group.tileCount,
@@ -49,7 +49,7 @@ function Factory({
       sourceCircleNumber === circleNumber &&
       clickedColor === group.tileColor
     ) {
-      return tileColorClass + " clicked-button";
+      return tileColorClass + ' clicked-button';
     }
     return tileColorClass;
   }
