@@ -28,15 +28,7 @@ function OverflowRow({
     playerNumber: number,
     turnNumber: number,
   ): boolean {
-    const isDisabled = playerNumber === turnNumber % 2 || source == undefined;
-
-    console.log(
-      `playerNumber: ${playerNumber}`,
-      `turnNumber: ${turnNumber}`,
-      `isDisabled: ${isDisabled}`,
-      `source: ${source}`,
-    );
-    return isDisabled;
+    return playerNumber === turnNumber % 2 || source == undefined;
   }
 
   return (
