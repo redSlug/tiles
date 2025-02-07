@@ -108,12 +108,31 @@ function clickDestination(state: GameState, action: ClickDestinationAction) {
   let isGameOver = false;
   if (gameOver) {
     isGameOver = true;
+
+    // TODO this needs to reflect game logic
     player0Score = state.playerRows[0].filter(
       row => row.openSpaceCount === 0,
     ).length;
+    player0Score += state.playerOverflowRows[0].reduce(
+      (accumulator, currentTile) => {
+        return currentTile.tileColor === undefined
+          ? 0
+          : accumulator + currentTile.penaltyAmount;
+      },
+      0,
+    );
+
     player1Score = state.playerRows[1].filter(
       row => row.openSpaceCount === 0,
     ).length;
+    player1Score += state.playerOverflowRows[1].reduce(
+      (accumulator, currentTile) => {
+        return currentTile.tileColor === undefined
+          ? 0
+          : accumulator + currentTile.penaltyAmount;
+      },
+      0,
+    );
   }
 
   const newGameState = {
