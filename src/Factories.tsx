@@ -1,6 +1,6 @@
 import './Factories.css';
 import Factory from './Factory.tsx';
-import { Action, FactoryCircle, GameState } from './types/all.ts';
+import { Action, GameState } from './types/all.ts';
 import { DataConnection } from 'peerjs';
 
 function Factories({
@@ -16,16 +16,16 @@ function Factories({
 }) {
   return (
     <div className="factories-container">
-      {state.circles.map((circle: FactoryCircle, index: number) => (
+      {state.factories.map((factory, index: number) => (
         <div key={index}>
           <Factory
-            circleNumber={index}
-            factoryColorGroups={circle.tiles}
+            factoryNumber={index}
+            factoryColorGroups={factory.tiles}
             gameDispatch={gameDispatch}
             peerDataConnection={peerDataConnection!}
             playerNumber={playerNumber}
             turnNumber={state.turnNumber}
-            sourceCircleNumber={state.source?.circleNumber}
+            sourceFactoryNumber={state.source?.factoryNumber}
           />
         </div>
       ))}

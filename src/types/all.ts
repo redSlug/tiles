@@ -6,13 +6,13 @@ export type Row = {
 };
 
 export type Source = {
-  circleNumber: number;
+  factoryNumber: number;
   tileColor: string;
   tileCount: number;
   tilesIndex: number;
 };
 
-export type FactoryCircle = {
+export type Factory = {
   tiles: Array<FactoryColorGroup>;
 };
 
@@ -26,14 +26,14 @@ export type FinalTile = {
   isFilled: boolean;
 };
 
-export type OverFlowTile = {
+export type PenaltyTile = {
   tileColor: string | undefined;
   penaltyAmount: number;
 };
 
 export type GameState = {
-  circles: Array<FactoryCircle>;
-  playerOverflowRows: Array<Array<OverFlowTile>>;
+  factories: Array<Factory>;
+  playerPenaltyRows: Array<Array<PenaltyTile>>;
   playerRows: Array<Array<Row>>;
   finalPlayerRows: Array<Array<Array<FinalTile>>>;
   source?: Source;
@@ -51,7 +51,7 @@ export type SetPeerGameStateAction = {
 
 export type ClickSourceAction = {
   type: 'click_source';
-  circleNumber: number;
+  factoryNumber: number;
   tileColor: string;
   tileCount: number;
   tilesIndex: number;

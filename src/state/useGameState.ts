@@ -33,7 +33,7 @@ function clickSource(state: GameState, action: ClickSourceAction) {
   return {
     ...state,
     source: {
-      circleNumber: action.circleNumber,
+      factoryNumber: action.factoryNumber,
       tileColor: action.tileColor,
       tileCount: action.tileCount,
       tilesIndex: action.tilesIndex,

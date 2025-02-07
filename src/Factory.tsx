@@ -6,21 +6,21 @@ import React, { useState } from 'react';
 import Tile from './components/Tile.tsx';
 
 function Factory({
-  circleNumber,
+  factoryNumber,
   factoryColorGroups,
   gameDispatch,
   peerDataConnection,
   playerNumber,
   turnNumber,
-  sourceCircleNumber,
+  sourceFactoryNumber,
 }: {
-  circleNumber: number;
+  factoryNumber: number;
   factoryColorGroups: Array<FactoryColorGroup>;
   gameDispatch: (action: Action) => void;
   peerDataConnection: DataConnection;
   playerNumber: number;
   turnNumber: number;
-  sourceCircleNumber: number | undefined;
+  sourceFactoryNumber: number | undefined;
 }) {
   const [clickedColor, setClickedColor] = useState<string | undefined>(
     undefined,
@@ -30,7 +30,7 @@ function Factory({
     setClickedColor(group.tileColor);
     gameDispatch({
       type: 'click_source',
-      circleNumber,
+      factoryNumber: factoryNumber,
       tileColor: group.tileColor,
       tileCount: group.tileCount,
       tilesIndex: index,
@@ -45,8 +45,8 @@ function Factory({
   function getClassName(group: FactoryColorGroup): string {
     const tileColorClass = `${group.tileColor}-tiles`;
     if (
-      sourceCircleNumber !== undefined &&
-      sourceCircleNumber === circleNumber &&
+      sourceFactoryNumber !== undefined &&
+      sourceFactoryNumber === factoryNumber &&
       clickedColor === group.tileColor
     ) {
       return tileColorClass + ' clicked-button';

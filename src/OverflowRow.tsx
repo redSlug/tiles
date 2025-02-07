@@ -1,4 +1,4 @@
-import { OverFlowTile, Source } from './types/all.ts';
+import { PenaltyTile, Source } from './types/all.ts';
 import Tile from './components/Tile.tsx';
 import './components/Tile.css';
 import './OverflowRow.css';
@@ -9,12 +9,12 @@ function OverflowRow({
   turnNumber,
   source,
 }: {
-  tiles: Array<OverFlowTile>;
+  tiles: Array<PenaltyTile>;
   playerNumber: number;
   turnNumber: number;
   source: Source | undefined;
 }) {
-  function getClassName(tile: OverFlowTile) {
+  function getClassName(tile: PenaltyTile) {
     if (!rowIsDisabled(source, playerNumber, turnNumber)) {
       return `empty-tile clickable-row`;
     } else if (tile.tileColor === undefined) {

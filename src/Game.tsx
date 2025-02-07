@@ -74,7 +74,7 @@ function Game() {
             peerDataConnection={zustandConnection!}
             state={state}
             playerNumber={playerNumber}
-            overflowTiles={state.playerOverflowRows[playerNumber]}
+            overflowTiles={state.playerPenaltyRows[playerNumber]}
           />
           <FinalRows
             finalRows={state.finalPlayerRows[playerNumber]}
@@ -89,7 +89,7 @@ function Game() {
             peerDataConnection={zustandConnection!}
             state={state}
             playerNumber={playerNumber === 0 ? 1 : 0}
-            overflowTiles={state.playerOverflowRows[playerNumber === 0 ? 1 : 0]}
+            overflowTiles={state.playerPenaltyRows[playerNumber === 0 ? 1 : 0]}
           />
           <FinalRows
             finalRows={state.finalPlayerRows[playerNumber === 0 ? 1 : 0]}

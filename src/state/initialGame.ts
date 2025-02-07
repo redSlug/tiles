@@ -1,4 +1,4 @@
-import { FactoryCircle, GameState } from '../types/all.ts';
+import { Factory, GameState } from '../types/all.ts';
 
 function getBagOfTiles(): Array<string> {
   const duplicate = (arr: Array<string>, times: number) =>
@@ -13,7 +13,7 @@ function getBagOfTiles(): Array<string> {
   return bagOfTiles;
 }
 
-function getCircle(tiles: Array<string>): FactoryCircle {
+function getFactory(tiles: Array<string>): Factory {
   const colorCounts = tiles.reduce(
     (acc: Map<string, number>, color: string) => {
       acc.set(color, (acc.get(color) || 0) + 1);
@@ -21,23 +21,23 @@ function getCircle(tiles: Array<string>): FactoryCircle {
     },
     new Map(),
   );
-  const factorCircleTiles = Array.from(colorCounts).map(([color, count]) => ({
+  const factoryTiles = Array.from(colorCounts).map(([color, count]) => ({
     tileColor: color,
     tileCount: count,
   }));
-  return { tiles: factorCircleTiles };
+  return { tiles: factoryTiles };
 }
 
-function getCircles(tiles: Array<string>): Array<FactoryCircle> {
-  const tilesPerCircle = 4;
-  const circles = [];
-  for (let i = 0; i < tiles.length; i += tilesPerCircle) {
-    const currentTiles = tiles.slice(i, i + tilesPerCircle);
-    circles.push(getCircle(currentTiles));
+function getFactories(tiles: Array<string>): Array<Factory> {
+  const tilesPerFactory = 4;
+  const factories = [];
+  for (let i = 0; i < tiles.length; i += tilesPerFactory) {
+    const currentTiles = tiles.slice(i, i + tilesPerFactory);
+    factories.push(getFactory(currentTiles));
   }
 
-  circles.push({ tiles: [{ tileColor: 'white', tileCount: 1 }] });
-  return circles;
+  factories.push({ tiles: [{ tileColor: 'white', tileCount: 1 }] });
+  return factories;
 }
 
 export function getInitialState(): GameState {
@@ -46,10 +46,10 @@ export function getInitialState(): GameState {
   bagOfTiles = bagOfTiles.slice(20);
 
   return {
-    circles: getCircles(startingTiles),
+    factories: getFactories(startingTiles),
     playerScores: [0, 0],
     isGameOver: false,
-    playerOverflowRows: [
+    playerPenaltyRows: [
       [
         { tileColor: undefined, penaltyAmount: 1 },
         { tileColor: undefined, penaltyAmount: 1 },

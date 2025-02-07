@@ -1,4 +1,4 @@
-import { Action, GameState, OverFlowTile, Row, Source } from './types/all.ts';
+import { Action, GameState, PenaltyTile, Row, Source } from './types/all.ts';
 import { DataConnection } from 'peerjs';
 import React, { useState } from 'react';
 import './Rows.css';
@@ -17,7 +17,7 @@ function Rows({
   peerDataConnection: DataConnection;
   state: GameState;
   playerNumber: number;
-  overflowTiles: Array<OverFlowTile>;
+  overflowTiles: Array<PenaltyTile>;
 }) {
   const { source, playerRows } = state as GameState;
 
