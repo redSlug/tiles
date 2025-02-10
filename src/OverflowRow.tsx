@@ -15,14 +15,15 @@ function OverflowRow({
   source: Source | undefined;
 }) {
   function getClassName(tile: PenaltyTile) {
-    if (!rowIsDisabled(source, playerNumber, turnNumber)) {
-      return `empty-tile clickable-row`;
+    if (rowIsDisabled(source, playerNumber, turnNumber)) {
+      return tile.tileColor === undefined
+        ? `empty-tile`
+        : `${tile.tileColor}-tiles`;
     } else if (tile.tileColor === undefined) {
-      return 'empty-tile';
+      return 'empty-tile clickable-row';
     }
     return `${tile.tileColor}-tiles`;
   }
-
   function rowIsDisabled(
     source: Source | undefined,
     playerNumber: number,
