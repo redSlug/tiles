@@ -1,10 +1,13 @@
 import {
   ClickDestinationAction,
+  Factory,
   FactoryColorGroup,
   GameState,
   PenaltyTile,
   Row,
 } from '../types/all.ts';
+
+const OVERFLOW_FACTORY_NUMBER = 5;
 
 function manageWhiteTile(
   sourceTiles: Array<FactoryColorGroup>,
@@ -26,13 +29,17 @@ function manageWhiteTile(
   }
 }
 
+function calculateOpenSpaceCount(currentRowData: Row, tileCount: number) {
+  return currentRowData.openSpaceCount - tileCount;
+}
+
 function updatePenaltyRow(
   playerPenaltyRow: Array<PenaltyTile>,
   currentRow: Row,
   tileColor: string,
   tileCount: number,
 ) {
-  let openSpaceCount = currentRow.openSpaceCount - tileCount;
+  const openSpaceCount = calculateOpenSpaceCount(currentRow, tileCount);
   if (openSpaceCount < 0) {
     const lastOpenOverflowIndex = playerPenaltyRow.findIndex(
       tile => tile.tileColor === undefined,
@@ -48,54 +55,17 @@ function updatePenaltyRow(
   }
 }
 
-function calculateOpenSpaceCount(currentRowData: Row, tileCount: number) {
-  return currentRowData.openSpaceCount - tileCount;
-}
-
-export function clickDestination(
-  state: GameState,
-  action: ClickDestinationAction,
+function moveRemainingSourceTilesToOverflow(
+  sourceTiles: Array<FactoryColorGroup>,
+  tileColor: string,
+  factoryNumber: number,
+  factories: Array<Factory>,
 ) {
-  const { rowNumber, playerNumber } = action;
-  const { tileColor, tileCount, factoryNumber } = state.source!;
-  const factories = state.factories;
-  const sourceTiles = factories[factoryNumber].tiles;
-  const overflowFactoryNumber = 5;
-
-  manageWhiteTile(
-    sourceTiles,
-    state.playerPenaltyRows[playerNumber],
-    factoryNumber === overflowFactoryNumber,
-  );
-
-  updatePenaltyRow(
-    state.playerPenaltyRows[playerNumber],
-    state.playerRows[playerNumber][rowNumber],
-    tileColor,
-    tileCount,
-  );
-
-  console.log('XXX', state.playerPenaltyRows[playerNumber]);
-
-  const openSpaceCount = calculateOpenSpaceCount(
-    state.playerRows[playerNumber][rowNumber],
-    tileCount,
-  );
-
-  console.log('YYY', state.playerPenaltyRows[playerNumber]);
-
-  state.playerRows[playerNumber][rowNumber] = { tileColor, openSpaceCount };
-
-  // Must deal with all tiles in the factory that was chosen
   for (const sourceTile of sourceTiles) {
-    if (
-      sourceTile === undefined ||
-      sourceTile.tileColor === tileColor ||
-      factoryNumber === overflowFactoryNumber
-    ) {
+    if (sourceTile === undefined || sourceTile.tileColor === tileColor) {
       continue;
     }
-    const overflowFactoryTiles = factories[overflowFactoryNumber].tiles;
+    const overflowFactoryTiles = factories[OVERFLOW_FACTORY_NUMBER].tiles;
     let didRecordTile = false;
     for (const overflowFactoryTile of overflowFactoryTiles) {
       if (overflowFactoryTile.tileColor === sourceTile.tileColor) {
@@ -108,13 +78,52 @@ export function clickDestination(
       overflowFactoryTiles.push(sourceTile);
     }
   }
+  // clear out source factory
+  factories[factoryNumber].tiles = [];
+}
 
-  if (factoryNumber != overflowFactoryNumber) {
-    factories[factoryNumber].tiles = [];
-  } else {
-    factories[overflowFactoryNumber].tiles = factories[
-      overflowFactoryNumber
+export function clickDestination(
+  state: GameState,
+  action: ClickDestinationAction,
+) {
+  const { rowNumber, playerNumber } = action;
+  const { tileColor, tileCount, factoryNumber } = state.source!;
+  const factories = state.factories;
+  const sourceTiles = factories[factoryNumber].tiles;
+
+  manageWhiteTile(
+    sourceTiles,
+    state.playerPenaltyRows[playerNumber],
+    factoryNumber === OVERFLOW_FACTORY_NUMBER,
+  );
+
+  updatePenaltyRow(
+    state.playerPenaltyRows[playerNumber],
+    state.playerRows[playerNumber][rowNumber],
+    tileColor,
+    tileCount,
+  );
+
+  const openSpaceCount = calculateOpenSpaceCount(
+    state.playerRows[playerNumber][rowNumber],
+    tileCount,
+  );
+
+  // Move source tile to destination row
+  state.playerRows[playerNumber][rowNumber] = { tileColor, openSpaceCount };
+
+  if (factoryNumber === OVERFLOW_FACTORY_NUMBER) {
+    // Remove chosen color tiles from overflow
+    factories[OVERFLOW_FACTORY_NUMBER].tiles = factories[
+      OVERFLOW_FACTORY_NUMBER
     ].tiles.filter(tile => tile.tileColor !== tileColor);
+  } else {
+    moveRemainingSourceTilesToOverflow(
+      sourceTiles,
+      tileColor,
+      factoryNumber,
+      factories,
+    );
   }
 
   const gameOver = factories.every(c => c.tiles.length == 0);
@@ -159,8 +168,6 @@ export function clickDestination(
     turnNumber: state.turnNumber + 1,
     playerScores: [player0Score, player1Score],
   };
-
-  console.log('ZZZ', newGameState);
 
   try {
     action.peerDataConnection.send(JSON.stringify(newGameState));
