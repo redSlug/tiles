@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import './Rows.css';
 import './components/Tile.css';
 import Tile from './components/Tile.tsx';
-import OverflowRow from './OverflowRow.tsx';
+import PenaltyRow from './PenaltyRow.tsx';
 
 function Rows({
   gameDispatch,
@@ -72,7 +72,7 @@ function Rows({
 
   return (
     <div className={'rows-container'}>
-      <OverflowRow
+      <PenaltyRow
         tiles={overflowTiles}
         playerNumber={playerNumber}
         turnNumber={state.turnNumber}

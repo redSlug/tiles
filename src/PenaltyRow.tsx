@@ -1,9 +1,9 @@
 import { PenaltyTile, Source } from './types/all.ts';
 import Tile from './components/Tile.tsx';
 import './components/Tile.css';
-import './OverflowRow.css';
+import './PenaltyRow.css';
 
-function OverflowRow({
+function PenaltyRow({
   tiles,
   playerNumber,
   turnNumber,
@@ -33,10 +33,10 @@ function OverflowRow({
   }
 
   return (
-    <div key={'overflow-row'} className={'overflow-row-container'}>
+    <div key={'penalty-row'} className={'penalty-row-container'}>
       {tiles.map((tile, colIndex: number) => (
         <Tile
-          key={`overflow-${colIndex}`}
+          key={`penalty-${colIndex}`}
           isDisabled={rowIsDisabled(source, playerNumber, turnNumber)}
           className={getClassName(tile)}
           onClick={() => {}}
@@ -47,4 +47,4 @@ function OverflowRow({
   );
 }
 
-export default OverflowRow;
+export default PenaltyRow;
