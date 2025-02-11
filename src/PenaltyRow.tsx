@@ -41,6 +41,7 @@ function PenaltyRow({
   }
 
   async function handleRowClick() {
+    console.log('in click penalty destination');
     if (isProcessing) {
       return;
     }
@@ -60,7 +61,7 @@ function PenaltyRow({
           key={`penalty-${colIndex}`}
           isDisabled={rowIsDisabled(source, playerNumber, turnNumber)}
           className={getClassName(tile)}
-          onClick={() => handleRowClick}
+          onClick={handleRowClick}
           value={'-' + tile.penaltyAmount.toString()}
         />
       ))}

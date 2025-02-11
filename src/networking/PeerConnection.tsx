@@ -102,7 +102,7 @@ function PeerConnection({
           peerGameState: getParsedGameState(data as string),
         });
       });
-      setTimeout(() => sendInitialGameToPeer(conn), 5000);
+      setTimeout(() => sendInitialGameToPeer(conn), 2000);
     });
   }, [peer]);
 

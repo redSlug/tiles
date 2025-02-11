@@ -12,13 +12,13 @@ import { OVERFLOW_FACTORY_NUMBER } from '../constants/all.ts';
 function manageWhiteTile(
   sourceTiles: Array<FactoryColorGroup>,
   penaltyRow: Array<PenaltyTile>,
-  isOverFlowArea: boolean,
+  isOverflowFactory: boolean,
 ) {
   const whiteTileIndex = sourceTiles.findIndex(
     tile => tile.tileColor === 'white',
   );
 
-  if (isOverFlowArea && whiteTileIndex > -1) {
+  if (isOverflowFactory && whiteTileIndex > -1) {
     // update source tiles
     sourceTiles.splice(whiteTileIndex);
     const lastOverflowIndex = penaltyRow.findIndex(
@@ -101,21 +101,86 @@ function calculatePlayerScore(
   playerPenaltyRow: Array<PenaltyTile>,
 ) {
   // TODO this needs to reflect game logic
-  let score = playerRows.filter(row => row.openSpaceCount === 0).length;
-  score += playerPenaltyRow.reduce((accumulator, currentTile) => {
-    return currentTile.tileColor === undefined
-      ? 0
-      : accumulator + currentTile.penaltyAmount;
-  }, 0);
-  return score;
+  const score = playerRows.filter(row => row.openSpaceCount === 0).length;
+  const penaltyAmount = playerPenaltyRow
+    .filter(tile => tile.tileColor !== undefined)
+    .reduce((accumulator, currentTile) => {
+      return currentTile.tileColor === undefined
+        ? 0
+        : accumulator + currentTile.penaltyAmount;
+    }, 0);
+  console.log(`Score: ${score}, penaltyAmount: ${penaltyAmount}`);
+  return score - penaltyAmount;
 }
 
 export function clickPenaltyDestination(
   state: GameState,
   action: ClickPenaltyDestinationAction,
 ) {
-  console.log('clickPenaltyDestination', action);
-  return state;
+  const { playerNumber } = action;
+  const { tileColor, tileCount, factoryNumber } = state.source!;
+  const factories = state.factories;
+  const sourceTiles = factories[factoryNumber].tiles;
+  const penaltyRow = state.playerPenaltyRows[playerNumber];
+  const isOverflowFactory = factoryNumber === OVERFLOW_FACTORY_NUMBER;
+
+  manageWhiteTile(sourceTiles, penaltyRow, isOverflowFactory);
+
+  // Fill penalty row
+  const openPenaltyIndex = penaltyRow.findIndex(
+    tile => tile.tileColor === undefined,
+  );
+  let lastIndexToFill = Math.min(
+    penaltyRow.length,
+    openPenaltyIndex + tileCount,
+  );
+  lastIndexToFill = Math.max(lastIndexToFill, 0);
+  for (let i = openPenaltyIndex; i < lastIndexToFill; i++) {
+    penaltyRow[i].tileColor = tileColor;
+  }
+
+  if (isOverflowFactory) {
+    // Remove chosen color tiles from overflow
+    factories[OVERFLOW_FACTORY_NUMBER].tiles = factories[
+      OVERFLOW_FACTORY_NUMBER
+    ].tiles.filter(tile => tile.tileColor !== tileColor);
+  } else {
+    moveRemainingSourceTilesToOverflow(
+      sourceTiles,
+      tileColor,
+      factoryNumber,
+      factories,
+    );
+  }
+
+  let player0Score = 0;
+  let player1Score = 0;
+  let isGameOver = false;
+  if (factories.every(c => c.tiles.length == 0)) {
+    isGameOver = true;
+    player0Score = calculatePlayerScore(
+      state.playerRows[0],
+      state.playerPenaltyRows[0],
+    );
+    player1Score = calculatePlayerScore(
+      state.playerRows[1],
+      state.playerPenaltyRows[1],
+    );
+  }
+
+  const newGameState = {
+    ...state,
+    isGameOver,
+    factories,
+    source: undefined,
+    turnNumber: state.turnNumber + 1,
+    playerScores: [player0Score, player1Score],
+  };
+
+  sendGameStateToPeer(newGameState, action);
+
+  console.log('sent newGameState in click penalty destination', newGameState);
+  return newGameState;
 }
 
 export function clickDestination(
