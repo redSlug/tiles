@@ -5,7 +5,10 @@ import {
   ClickSourceAction,
   SetPeerGameStateAction,
 } from '../types/all.ts';
-import { clickDestination } from './clickDestination.ts';
+import {
+  clickDestination,
+  clickPenaltyDestination,
+} from './clickDestination.ts';
 
 function clickRouterReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
@@ -13,6 +16,8 @@ function clickRouterReducer(state: GameState, action: Action): GameState {
       return clickSource(state, action);
     case 'click_destination':
       return clickDestination(state, action);
+    case 'click_penalty_destination':
+      return clickPenaltyDestination(state, action);
     case 'click_round_end':
       return state;
     case 'set_peer_game_state':

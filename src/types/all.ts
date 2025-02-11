@@ -65,6 +65,12 @@ export type ClickDestinationAction = {
   playerNumber: number;
 };
 
+export type ClickPenaltyDestinationAction = {
+  type: 'click_penalty_destination';
+  peerDataConnection: DataConnection;
+  playerNumber: number;
+};
+
 export type ClickRoundEndAction = {
   type: 'click_round_end';
 };
@@ -73,4 +79,5 @@ export type Action =
   | SetPeerGameStateAction
   | ClickSourceAction
   | ClickDestinationAction
+  | ClickPenaltyDestinationAction
   | ClickRoundEndAction;

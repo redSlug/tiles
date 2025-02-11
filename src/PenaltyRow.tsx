@@ -1,19 +1,27 @@
-import { PenaltyTile, Source } from './types/all.ts';
+import { Action, PenaltyTile, Source } from './types/all.ts';
 import Tile from './components/Tile.tsx';
 import './components/Tile.css';
 import './PenaltyRow.css';
+import { useState } from 'react';
+import { DataConnection } from 'peerjs';
 
 function PenaltyRow({
+  gameDispatch,
+  peerDataConnection,
   tiles,
   playerNumber,
   turnNumber,
   source,
 }: {
+  gameDispatch: (action: Action) => void;
+  peerDataConnection: DataConnection;
   tiles: Array<PenaltyTile>;
   playerNumber: number;
   turnNumber: number;
   source: Source | undefined;
 }) {
+  const [isProcessing, setIsProcessing] = useState(false);
+
   function getClassName(tile: PenaltyTile) {
     if (rowIsDisabled(source, playerNumber, turnNumber)) {
       return tile.tileColor === undefined
@@ -32,6 +40,19 @@ function PenaltyRow({
     return playerNumber === turnNumber % 2 || source == undefined;
   }
 
+  async function handleRowClick() {
+    if (isProcessing) {
+      return;
+    }
+    setIsProcessing(true);
+    gameDispatch({
+      type: 'click_penalty_destination',
+      peerDataConnection: peerDataConnection!,
+      playerNumber,
+    });
+    setIsProcessing(false);
+  }
+
   return (
     <div key={'penalty-row'} className={'penalty-row-container'}>
       {tiles.map((tile, colIndex: number) => (
@@ -39,7 +60,7 @@ function PenaltyRow({
           key={`penalty-${colIndex}`}
           isDisabled={rowIsDisabled(source, playerNumber, turnNumber)}
           className={getClassName(tile)}
-          onClick={() => {}}
+          onClick={() => handleRowClick}
           value={'-' + tile.penaltyAmount.toString()}
         />
       ))}

@@ -1,13 +1,13 @@
 import {
   ClickDestinationAction,
+  ClickPenaltyDestinationAction,
   Factory,
   FactoryColorGroup,
   GameState,
   PenaltyTile,
   Row,
 } from '../types/all.ts';
-
-const OVERFLOW_FACTORY_NUMBER = 5;
+import { OVERFLOW_FACTORY_NUMBER } from '../constants/all.ts';
 
 function manageWhiteTile(
   sourceTiles: Array<FactoryColorGroup>,
@@ -55,6 +55,20 @@ function updatePenaltyRow(
   }
 }
 
+function sendGameStateToPeer(
+  state: GameState,
+  action: ClickDestinationAction | ClickPenaltyDestinationAction,
+) {
+  try {
+    action.peerDataConnection.send(JSON.stringify(state));
+  } catch (error) {
+    console.error('could not send to peer', {
+      error,
+      connection: action.peerDataConnection,
+    });
+  }
+}
+
 function moveRemainingSourceTilesToOverflow(
   sourceTiles: Array<FactoryColorGroup>,
   tileColor: string,
@@ -80,6 +94,28 @@ function moveRemainingSourceTilesToOverflow(
   }
   // clear out source factory
   factories[factoryNumber].tiles = [];
+}
+
+function calculatePlayerScore(
+  playerRows: Array<Row>,
+  playerPenaltyRow: Array<PenaltyTile>,
+) {
+  // TODO this needs to reflect game logic
+  let score = playerRows.filter(row => row.openSpaceCount === 0).length;
+  score += playerPenaltyRow.reduce((accumulator, currentTile) => {
+    return currentTile.tileColor === undefined
+      ? 0
+      : accumulator + currentTile.penaltyAmount;
+  }, 0);
+  return score;
+}
+
+export function clickPenaltyDestination(
+  state: GameState,
+  action: ClickPenaltyDestinationAction,
+) {
+  console.log('clickPenaltyDestination', action);
+  return state;
 }
 
 export function clickDestination(
@@ -126,37 +162,18 @@ export function clickDestination(
     );
   }
 
-  const gameOver = factories.every(c => c.tiles.length == 0);
-
   let player0Score = 0;
   let player1Score = 0;
   let isGameOver = false;
-  if (gameOver) {
+  if (factories.every(c => c.tiles.length == 0)) {
     isGameOver = true;
-
-    // TODO this needs to reflect game logic
-    player0Score = state.playerRows[0].filter(
-      row => row.openSpaceCount === 0,
-    ).length;
-    player0Score += state.playerPenaltyRows[0].reduce(
-      (accumulator, currentTile) => {
-        return currentTile.tileColor === undefined
-          ? 0
-          : accumulator + currentTile.penaltyAmount;
-      },
-      0,
+    player0Score = calculatePlayerScore(
+      state.playerRows[0],
+      state.playerPenaltyRows[0],
     );
-
-    player1Score = state.playerRows[1].filter(
-      row => row.openSpaceCount === 0,
-    ).length;
-    player1Score += state.playerPenaltyRows[1].reduce(
-      (accumulator, currentTile) => {
-        return currentTile.tileColor === undefined
-          ? 0
-          : accumulator + currentTile.penaltyAmount;
-      },
-      0,
+    player1Score = calculatePlayerScore(
+      state.playerRows[1],
+      state.playerPenaltyRows[1],
     );
   }
 
@@ -169,14 +186,7 @@ export function clickDestination(
     playerScores: [player0Score, player1Score],
   };
 
-  try {
-    action.peerDataConnection.send(JSON.stringify(newGameState));
-  } catch (error) {
-    console.error('could not send to peer', {
-      error,
-      connection: action.peerDataConnection,
-    });
-  }
+  sendGameStateToPeer(newGameState, action);
 
   console.log('sent newGameState in click destination', newGameState);
   return newGameState;

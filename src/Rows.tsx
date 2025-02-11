@@ -39,7 +39,7 @@ function Rows({
     );
   }
 
-  async function handleRowClick(index: number) {
+  function handleRowClick(index: number) {
     if (isProcessing) {
       return;
     }
@@ -73,6 +73,8 @@ function Rows({
   return (
     <div className={'rows-container'}>
       <PenaltyRow
+        gameDispatch={gameDispatch}
+        peerDataConnection={peerDataConnection}
         tiles={overflowTiles}
         playerNumber={playerNumber}
         turnNumber={state.turnNumber}
