@@ -20,7 +20,7 @@ function manageWhiteTile(
   );
 
   if (isOverflowFactory && whiteTileIndex > -1) {
-    // update source tiles
+    // update source tiles by removing white tile only
     sourceTiles.splice(whiteTileIndex);
     const lastOverflowIndex = penaltyRow.findIndex(
       tile => tile.tileColor === undefined,
