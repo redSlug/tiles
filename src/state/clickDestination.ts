@@ -21,7 +21,7 @@ function manageWhiteTile(
 
   if (isOverflowFactory && whiteTileIndex > -1) {
     // update source tiles by removing white tile only
-    sourceTiles.splice(whiteTileIndex);
+    sourceTiles.splice(whiteTileIndex, 1);
     const lastOverflowIndex = penaltyRow.findIndex(
       tile => tile.tileColor === undefined,
     );
@@ -129,12 +129,51 @@ function updateFinalRows(rows: Array<Row>, finalRows: Array<Array<FinalTile>>) {
     if (colorsToPopulate[i] === undefined) {
       continue;
     }
-    let finalRowToUpdate = finalRows[i];
+    const finalRowToUpdate = finalRows[i];
     const updateIndex = finalRowToUpdate.findIndex(
       tile => tile.tileColor === colorsToPopulate[i],
     );
     finalRowToUpdate[updateIndex].isFilled = true;
   }
+}
+
+function endPlayerTurn(
+  state: GameState,
+  factories: Array<Factory>,
+  action: ClickDestinationAction | ClickPenaltyDestinationAction,
+) {
+  let player0Score = state.playerScores[0];
+  let player1Score = state.playerScores[1];
+  let isGameOver = false;
+  if (factories.every(c => c.tiles.length == 0)) {
+    isGameOver = true;
+
+    updateFinalRows(state.playerRows[0], state.finalPlayerRows[0]);
+    updateFinalRows(state.playerRows[1], state.finalPlayerRows[1]);
+
+    player0Score = calculatePlayerScore(
+      state.playerRows[0],
+      state.playerPenaltyRows[0],
+    );
+    player1Score = calculatePlayerScore(
+      state.playerRows[1],
+      state.playerPenaltyRows[1],
+    );
+  }
+
+  const newGameState = {
+    ...state,
+    isGameOver,
+    factories,
+    source: undefined,
+    turnNumber: state.turnNumber + 1,
+    playerScores: [player0Score, player1Score],
+  };
+
+  sendGameStateToPeer(newGameState, action);
+
+  console.log('sent newGameState in click penalty destination', newGameState);
+  return newGameState;
 }
 
 export function clickPenaltyDestination(
@@ -148,8 +187,7 @@ export function clickPenaltyDestination(
   const penaltyRow = state.playerPenaltyRows[playerNumber];
   const isOverflowFactory = factoryNumber === OVERFLOW_FACTORY_NUMBER;
 
-  // don't need this I think
-  // manageWhiteTile(sourceTiles, penaltyRow, isOverflowFactory);
+  manageWhiteTile(sourceTiles, penaltyRow, isOverflowFactory);
 
   // Fill penalty row
   const openPenaltyIndex = penaltyRow.findIndex(
@@ -182,38 +220,7 @@ export function clickPenaltyDestination(
     );
   }
 
-  let player0Score = 0;
-  let player1Score = 0;
-  let isGameOver = false;
-  if (factories.every(c => c.tiles.length == 0)) {
-    isGameOver = true;
-
-    updateFinalRows(state.playerRows[0], state.finalPlayerRows[0]);
-    updateFinalRows(state.playerRows[1], state.finalPlayerRows[1]);
-
-    player0Score = calculatePlayerScore(
-      state.playerRows[0],
-      state.playerPenaltyRows[0],
-    );
-    player1Score = calculatePlayerScore(
-      state.playerRows[1],
-      state.playerPenaltyRows[1],
-    );
-  }
-
-  const newGameState = {
-    ...state,
-    isGameOver,
-    factories,
-    source: undefined,
-    turnNumber: state.turnNumber + 1,
-    playerScores: [player0Score, player1Score],
-  };
-
-  sendGameStateToPeer(newGameState, action);
-
-  console.log('sent newGameState in click penalty destination', newGameState);
-  return newGameState;
+  return endPlayerTurn(state, factories, action);
 }
 
 export function clickDestination(
@@ -260,32 +267,5 @@ export function clickDestination(
     );
   }
 
-  let player0Score = 0;
-  let player1Score = 0;
-  let isGameOver = false;
-  if (factories.every(c => c.tiles.length == 0)) {
-    isGameOver = true;
-    player0Score = calculatePlayerScore(
-      state.playerRows[0],
-      state.playerPenaltyRows[0],
-    );
-    player1Score = calculatePlayerScore(
-      state.playerRows[1],
-      state.playerPenaltyRows[1],
-    );
-  }
-
-  const newGameState = {
-    ...state,
-    isGameOver,
-    factories,
-    source: undefined,
-    turnNumber: state.turnNumber + 1,
-    playerScores: [player0Score, player1Score],
-  };
-
-  sendGameStateToPeer(newGameState, action);
-
-  console.log('sent newGameState in click destination', newGameState);
-  return newGameState;
+  return endPlayerTurn(state, factories, action);
 }
