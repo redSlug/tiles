@@ -1,6 +1,6 @@
 import { Factory, GameState } from '../types/all.ts';
 
-function getBagOfTiles(): Array<string> {
+export function getNewBagOfTiles(): Array<string> {
   const duplicate = (arr: Array<string>, times: number) =>
     Array(times)
       .fill([...arr])
@@ -28,7 +28,7 @@ function getFactory(tiles: Array<string>): Factory {
   return { tiles: factoryTiles };
 }
 
-function getFactories(tiles: Array<string>): Array<Factory> {
+export function getInitialFactories(tiles: Array<string>): Array<Factory> {
   const tilesPerFactory = 4;
   const factories = [];
   for (let i = 0; i < tiles.length; i += tilesPerFactory) {
@@ -40,49 +40,58 @@ function getFactories(tiles: Array<string>): Array<Factory> {
   return factories;
 }
 
+export function getEmptyPenaltyRows() {
+  return [
+    [
+      { tileColor: undefined, penaltyAmount: 1 },
+      { tileColor: undefined, penaltyAmount: 1 },
+      { tileColor: undefined, penaltyAmount: 1 },
+      { tileColor: undefined, penaltyAmount: 2 },
+      { tileColor: undefined, penaltyAmount: 2 },
+      { tileColor: undefined, penaltyAmount: 3 },
+    ],
+    [
+      { tileColor: undefined, penaltyAmount: 1 },
+      { tileColor: undefined, penaltyAmount: 1 },
+      { tileColor: undefined, penaltyAmount: 1 },
+      { tileColor: undefined, penaltyAmount: 2 },
+      { tileColor: undefined, penaltyAmount: 2 },
+      { tileColor: undefined, penaltyAmount: 3 },
+    ],
+  ];
+}
+
+export function getEmptyPlayerRows() {
+  return [
+    [
+      { openSpaceCount: 1, tileColor: undefined },
+      { openSpaceCount: 2, tileColor: undefined },
+      { openSpaceCount: 3, tileColor: undefined },
+      { openSpaceCount: 4, tileColor: undefined },
+      { openSpaceCount: 5, tileColor: undefined },
+    ],
+    [
+      { openSpaceCount: 1, tileColor: undefined },
+      { openSpaceCount: 2, tileColor: undefined },
+      { openSpaceCount: 3, tileColor: undefined },
+      { openSpaceCount: 4, tileColor: undefined },
+      { openSpaceCount: 5, tileColor: undefined },
+    ],
+  ];
+}
+
 export function getInitialState(): GameState {
-  let bagOfTiles = getBagOfTiles();
+  let bagOfTiles = getNewBagOfTiles();
+  // TODO define and use constant for amount of tiles in initial factory setup
   const startingTiles = bagOfTiles.slice(0, 20);
   bagOfTiles = bagOfTiles.slice(20);
 
   return {
-    factories: getFactories(startingTiles),
+    factories: getInitialFactories(startingTiles),
     playerScores: [0, 0],
     isGameOver: false,
-    playerPenaltyRows: [
-      [
-        { tileColor: undefined, penaltyAmount: 1 },
-        { tileColor: undefined, penaltyAmount: 1 },
-        { tileColor: undefined, penaltyAmount: 1 },
-        { tileColor: undefined, penaltyAmount: 2 },
-        { tileColor: undefined, penaltyAmount: 2 },
-        { tileColor: undefined, penaltyAmount: 3 },
-      ],
-      [
-        { tileColor: undefined, penaltyAmount: 1 },
-        { tileColor: undefined, penaltyAmount: 1 },
-        { tileColor: undefined, penaltyAmount: 1 },
-        { tileColor: undefined, penaltyAmount: 2 },
-        { tileColor: undefined, penaltyAmount: 2 },
-        { tileColor: undefined, penaltyAmount: 3 },
-      ],
-    ],
-    playerRows: [
-      [
-        { openSpaceCount: 1, tileColor: undefined },
-        { openSpaceCount: 2, tileColor: undefined },
-        { openSpaceCount: 3, tileColor: undefined },
-        { openSpaceCount: 4, tileColor: undefined },
-        { openSpaceCount: 5, tileColor: undefined },
-      ],
-      [
-        { openSpaceCount: 1, tileColor: undefined },
-        { openSpaceCount: 2, tileColor: undefined },
-        { openSpaceCount: 3, tileColor: undefined },
-        { openSpaceCount: 4, tileColor: undefined },
-        { openSpaceCount: 5, tileColor: undefined },
-      ],
-    ],
+    playerPenaltyRows: getEmptyPenaltyRows(),
+    playerRows: getEmptyPlayerRows(),
     finalPlayerRows: [
       [
         [
