@@ -1,5 +1,5 @@
 .score {
-  color: darkblue;
+  color: var(--text-color);
   font-size: large;
 }
 

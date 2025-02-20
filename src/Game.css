@@ -11,7 +11,7 @@
 
 .title-string {
   font-size: x-large;
-  color: darkblue;
+  color: var(--text-color);
 }
 
 .break {
