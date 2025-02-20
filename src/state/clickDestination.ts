@@ -103,12 +103,75 @@ function moveRemainingSourceTilesToOverflow(
   factories[factoryNumber].tiles = [];
 }
 
-function calculatePlayerScore(
+function calculateContiguousScoreForTile(
+  color: string,
+  finalRows: Array<Array<FinalTile>>,
+  index: number,
+) {
+  const startRow = index;
+  const startCol = finalRows[index].findIndex(tile => tile.tileColor === color);
+  const numRows = finalRows.length;
+  const numCols = finalRows[0].length;
+  let score = 1;
+
+  // Expand upwards
+  let currentRow = startRow - 1;
+  while (currentRow >= 0 && finalRows[currentRow][startCol].isFilled) {
+    score++;
+    currentRow--;
+  }
+
+  // Expand downwards
+  currentRow = startRow + 1;
+  while (currentRow < numRows && finalRows[currentRow][startCol].isFilled) {
+    score++;
+    currentRow++;
+  }
+
+  // Expand left
+  let currentCol = startCol - 1;
+  while (currentCol >= 0 && finalRows[startRow][currentCol].isFilled) {
+    score++;
+    currentCol--;
+  }
+
+  // Expand right
+  currentCol = startCol + 1;
+  while (currentCol < numCols && finalRows[startRow][currentCol].isFilled) {
+    score++;
+    currentCol++;
+  }
+
+  return score;
+}
+
+function sumAllContiguousScoresWhilePlacingTiles(
+  playerRows: Array<Row>,
+  finalPlayerRows: Array<Array<FinalTile>>,
+): number {
+  let score = 0;
+  playerRows.forEach((row, index) => {
+    if (row.tileColor !== undefined && row.openSpaceCount === 0) {
+      score += calculateContiguousScoreForTile(
+        row.tileColor,
+        finalPlayerRows,
+        index,
+      );
+      updateFinalRowWithTile(index, row.tileColor, finalPlayerRows);
+    }
+  });
+  return score;
+}
+
+function calculatePlayerScoreWhilePlacingFinalTiles(
   playerRows: Array<Row>,
   playerPenaltyRow: Array<PenaltyTile>,
-) {
-  // TODO this needs to reflect game logic
-  const score = playerRows.filter(row => row.openSpaceCount === 0).length;
+  finalPlayerRows: Array<Array<FinalTile>>,
+): number {
+  const score = sumAllContiguousScoresWhilePlacingTiles(
+    playerRows,
+    finalPlayerRows,
+  );
   const penaltyAmount = playerPenaltyRow
     .filter(tile => tile.tileColor !== undefined)
     .reduce((accumulator, currentTile) => {
@@ -120,32 +183,29 @@ function calculatePlayerScore(
   return score - penaltyAmount;
 }
 
-function updateFinalRows(rows: Array<Row>, finalRows: Array<Array<FinalTile>>) {
-  console.log(`FinalRows: ${rows.length}`);
-  console.log(`FinalRows: ${finalRows.length}`);
-
-  // TODO make sure you can't populate a row w/ a tile that has already been populated with that color tile
-  const colorsToPopulate = rows.map(row =>
-    row.openSpaceCount === 0 ? row.tileColor : undefined,
-  );
-
-  console.log('colors', colorsToPopulate);
-
-  for (let i = 0; i < colorsToPopulate.length; i++) {
-    if (colorsToPopulate[i] === undefined) {
-      continue;
-    }
-    const finalRowToUpdate = finalRows[i];
-    const updateIndex = finalRowToUpdate.findIndex(
-      tile => tile.tileColor === colorsToPopulate[i],
-    );
-    finalRowToUpdate[updateIndex].isFilled = true;
+function updateFinalRowWithTile(
+  rowIndex: number,
+  tileColor: string | undefined,
+  finalRows: Array<Array<FinalTile>>,
+) {
+  if (tileColor === undefined) {
+    return;
   }
+
+  const updateColIndex = finalRows[rowIndex].findIndex(
+    tile => tile.tileColor === tileColor,
+  );
+  console.log('other update data', {
+    tileColor,
+    finalRow: finalRows[rowIndex],
+    updateColIndex,
+  });
+  finalRows[rowIndex][updateColIndex].isFilled = true;
 }
 
 function isGameOver(finalTiles: Array<Array<Array<FinalTile>>>): boolean {
-  for (let playerFinalRows of finalTiles) {
-    for (let playerFinalRow of playerFinalRows) {
+  for (const playerFinalRows of finalTiles) {
+    for (const playerFinalRow of playerFinalRows) {
       const emptyTiles = playerFinalRow.filter(tile => !tile.isFilled);
       if (emptyTiles.length === 0) {
         return true;
@@ -162,24 +222,21 @@ function endPlayerTurn(
 ) {
   let player0Score = state.playerScores[0];
   let player1Score = state.playerScores[1];
-
-  let isRoundOver = factories.every(c => c.tiles.length == 0);
+  const isRoundOver = factories.every(c => c.tiles.length == 0);
 
   if (isRoundOver) {
-    player0Score = calculatePlayerScore(
+    player0Score += calculatePlayerScoreWhilePlacingFinalTiles(
       state.playerRows[0],
       state.playerPenaltyRows[0],
+      state.finalPlayerRows[0],
     );
-    player1Score = calculatePlayerScore(
+    player1Score += calculatePlayerScoreWhilePlacingFinalTiles(
       state.playerRows[1],
       state.playerPenaltyRows[1],
+      state.finalPlayerRows[1],
     );
 
-    updateFinalRows(state.playerRows[0], state.finalPlayerRows[0]);
-    updateFinalRows(state.playerRows[1], state.finalPlayerRows[1]);
-
     if (state.bagOfTiles.length < factories.length * 4) {
-      console.log(`Bag of Tiles: ${state.bagOfTiles.length}`);
       state.bagOfTiles = getNewBagOfTiles();
     }
 
@@ -188,7 +245,6 @@ function endPlayerTurn(
     factories = getInitialFactories(state.bagOfTiles.slice(0, 20));
     state.bagOfTiles = state.bagOfTiles.slice(20, state.bagOfTiles.length);
   }
-
   const newGameState = {
     ...state,
     isGameOver: isGameOver(state.finalPlayerRows),
@@ -197,7 +253,6 @@ function endPlayerTurn(
     turnNumber: state.turnNumber + 1,
     playerScores: [player0Score, player1Score],
   };
-
   sendGameStateToPeer(newGameState, action);
   console.log('sent newGameState in endPlayerTurn', newGameState);
   return newGameState;
@@ -254,6 +309,8 @@ export function clickDestination(
   state: GameState,
   action: ClickDestinationAction,
 ) {
+  console.log('clickDestination state', state);
+
   const { rowNumber, playerNumber } = action;
   const { tileColor, tileCount, factoryNumber } = state.source!;
   const factories = state.factories;

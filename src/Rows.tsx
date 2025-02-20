@@ -19,23 +19,30 @@ function Rows({
   playerNumber: number;
   overflowTiles: Array<PenaltyTile>;
 }) {
-  const { source, playerRows } = state as GameState;
+  const { source, playerRows, finalPlayerRows } = state as GameState;
 
   const rows = playerRows[playerNumber];
+  const finalRows = finalPlayerRows[playerNumber];
   const [isProcessing, setIsProcessing] = useState(false);
 
   function rowIsDisabled(
     row: Row,
+    rowIndex: number,
     source: Source | undefined,
     isProcessing: boolean,
   ): boolean {
+    const finalRow = finalRows[rowIndex];
+    const colorAlreadyFull = finalRow.some(
+      tile => tile.isFilled && tile.tileColor === source?.tileColor,
+    );
     return (
       playerNumber === state.turnNumber % 2 ||
       isProcessing ||
       source == undefined ||
       row.openSpaceCount === 0 ||
       (row.tileColor != undefined && row.tileColor != source!.tileColor) ||
-      source!.tileColor === 'white'
+      source!.tileColor === 'white' ||
+      colorAlreadyFull
     );
   }
 
@@ -55,12 +62,13 @@ function Rows({
 
   function getTileClassName(
     row: Row,
+    rowIndex: number,
     colIndex: number,
     source: Source | undefined,
     isProcessing: boolean,
   ): string {
     if (row.tileColor === undefined || colIndex < row.openSpaceCount) {
-      if (!rowIsDisabled(row, source, isProcessing)) {
+      if (!rowIsDisabled(row, rowIndex, source, isProcessing)) {
         return `empty-tile clickable-row`;
       }
 
@@ -85,9 +93,10 @@ function Rows({
           {Array.from(Array(rowIndex + 1)).map((_, colIndex) => (
             <React.Fragment key={colIndex}>
               <Tile
-                isDisabled={rowIsDisabled(row, source, isProcessing)}
+                isDisabled={rowIsDisabled(row, rowIndex, source, isProcessing)}
                 className={getTileClassName(
                   row,
+                  rowIndex,
                   colIndex,
                   source,
                   isProcessing,
