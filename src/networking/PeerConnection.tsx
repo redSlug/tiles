@@ -30,9 +30,8 @@ function PeerConnection({
   peerShareCode: string | undefined;
   setPlayerNumber: (playerNumber: number) => void;
 }) {
-  const setZustandConnection = usePeerJsStore(
-    state => state.setZustandConnection,
-  );
+  const { setZustandConnection, setPeerWithShareCodeIsConnected } =
+    usePeerJsStore(state => state.setZustandConnection);
 
   const [myPeerId, setMyPeerId] = useState('');
   const [shouldSendMessage, setShouldSendMessage] = useState(false);
@@ -88,6 +87,7 @@ function PeerConnection({
               type: 'set_peer_game_state',
               peerGameState: getParsedGameState(data as string),
             });
+            setPeerWithShareCodeIsConnected(true);
           });
         });
       }

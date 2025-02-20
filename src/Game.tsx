@@ -17,6 +17,7 @@ function Game() {
 
   const zustandConnection = usePeerJsStore(state => state.zustandConnection);
   const [playerNumber, setPlayerNumber] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
   function getTitleString(): string {
     if (state.isGameOver) {
@@ -40,8 +41,13 @@ function Game() {
       ? 'waiting for friend'
       : 'your turn';
   }
+
   const titleString = getTitleString();
   if (zustandConnection === undefined) {
+    if (isLoading) {
+      return <p>loading - do not hit refresh!</p>;
+    }
+
     return (
       <>
         <PeerConnection
