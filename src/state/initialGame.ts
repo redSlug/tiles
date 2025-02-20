@@ -1,4 +1,4 @@
-import { Factory, GameState } from '../types/all.ts';
+import { Factory, GameState } from '../types/all';
 
 export function getNewBagOfTiles(): Array<string> {
   const duplicate = (arr: Array<string>, times: number) =>

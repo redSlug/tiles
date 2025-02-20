@@ -7,14 +7,14 @@ import {
   GameState,
   PenaltyTile,
   Row,
-} from '../types/all.ts';
-import { OVERFLOW_FACTORY_NUMBER } from '../constants/all.ts';
+} from '../types/all';
+import { OVERFLOW_FACTORY_NUMBER } from '../constants/all';
 import {
   getNewBagOfTiles,
   getEmptyPenaltyRows,
   getEmptyPlayerRows,
   getInitialFactories,
-} from './initialGame.ts';
+} from './initialGame';
 
 function manageWhiteTile(
   sourceTiles: Array<FactoryColorGroup>,
@@ -103,7 +103,7 @@ function moveRemainingSourceTilesToOverflow(
   factories[factoryNumber].tiles = [];
 }
 
-function calculateContiguousScoreForTile(
+export function calculateContiguousScoreForTile(
   color: string,
   finalRows: Array<Array<FinalTile>>,
   index: number,
@@ -145,7 +145,7 @@ function calculateContiguousScoreForTile(
   return score;
 }
 
-function sumAllContiguousScoresWhilePlacingTiles(
+export function sumAllContiguousScoresWhilePlacingTiles(
   playerRows: Array<Row>,
   finalPlayerRows: Array<Array<FinalTile>>,
 ): number {
@@ -163,7 +163,7 @@ function sumAllContiguousScoresWhilePlacingTiles(
   return score;
 }
 
-function calculatePlayerScoreWhilePlacingFinalTiles(
+export function calculatePlayerScoreWhilePlacingFinalTiles(
   playerRows: Array<Row>,
   playerPenaltyRow: Array<PenaltyTile>,
   finalPlayerRows: Array<Array<FinalTile>>,
@@ -179,7 +179,6 @@ function calculatePlayerScoreWhilePlacingFinalTiles(
         ? 0
         : accumulator + currentTile.penaltyAmount;
     }, 0);
-  console.log(`Score: ${score}, penaltyAmount: ${penaltyAmount}`);
   return score - penaltyAmount;
 }
 
