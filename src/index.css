@@ -13,12 +13,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   --text-color: lightskyblue;
   --background-color: darkblue;
 }
 
-:root[data-theme="light"] {
+:root[data-theme='light'] {
   --text-color: darkblue;
   --background-color: lightskyblue;
 }
