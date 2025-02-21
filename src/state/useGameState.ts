@@ -29,7 +29,10 @@ function clickRouterReducer(state: GameState, action: Action): GameState {
 }
 
 function setPeerGameState(action: SetPeerGameStateAction) {
-  console.log('peer game state to set', action.peerGameState);
+  console.log('action state', action.peerGameState);
+  console.log(action.peerGameState.turnNumber);
+  const storageId = `peerGameState-${action.peerId}`;
+  localStorage.setItem(storageId, JSON.stringify(action.peerGameState));
   return { ...action.peerGameState };
 }
 

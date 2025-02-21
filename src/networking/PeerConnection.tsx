@@ -87,6 +87,7 @@ function PeerConnection({
             setIsConnected(true);
             gameDispatch({
               type: 'set_peer_game_state',
+              peerId: peerShareCode, // putting share code so it can be consistent with the other client
               peerGameState: getParsedGameState(data as string),
             });
           });
@@ -100,10 +101,27 @@ function PeerConnection({
         setIsConnected(true);
         gameDispatch({
           type: 'set_peer_game_state',
+          peerId: myPeerId,
           peerGameState: getParsedGameState(data as string),
         });
       });
       setTimeout(() => sendInitialGameToPeer(conn), 2000);
+    });
+
+    peer?.on('disconnected', function () {
+      console.log('Connection lost. Please reconnect');
+      // Workaround for peer.reconnect deleting previous id
+      // peer.id = lastPeerId;
+      // peer = lastPeerId;
+      peer.reconnect();
+    });
+    peer?.on('close', function () {
+      setIsConnected(false); // this doesn't do much
+      console.log('Connection destroyed');
+    });
+    peer?.on('error', function (err) {
+      console.log('error', err);
+      alert('' + err);
     });
   }, [peer]);
 
