@@ -256,6 +256,24 @@ function endPlayerTurn(
     factories = getInitialFactories(state.bagOfTiles.slice(0, 20));
     state.bagOfTiles = state.bagOfTiles.slice(20, state.bagOfTiles.length);
   }
+
+  if (isGameOver(state.finalPlayerRows)) {
+    // calculate end of game bonus
+    for (let i = 0; i < state.finalPlayerRows.length; i++) {
+      for (const playerFinalRow of state.finalPlayerRows[i]) {
+        const emptyTiles = playerFinalRow.filter(tile => !tile.isFilled);
+        if (emptyTiles.length === 0) {
+          if (i == 0) {
+            player0Score += 2;
+          } else {
+            player1Score += 2;
+          }
+        }
+      }
+    }
+    // TODO calculate end game bonuses for column and all color full
+  }
+
   const newGameState = {
     ...state,
     isGameOver: isGameOver(state.finalPlayerRows),
