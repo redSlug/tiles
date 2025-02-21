@@ -1,7 +1,6 @@
 import './Factory.css';
 import './components/Tile.css';
 import { Action, FactoryColorGroup } from './types/all.ts';
-import { DataConnection } from 'peerjs';
 import React, { useState } from 'react';
 import Tile from './components/Tile.tsx';
 
@@ -9,18 +8,18 @@ function Factory({
   factoryNumber,
   factoryColorGroups,
   gameDispatch,
-  peerDataConnection,
   playerNumber,
   turnNumber,
   sourceFactoryNumber,
+  isLocalGame,
 }: {
   factoryNumber: number;
   factoryColorGroups: Array<FactoryColorGroup>;
   gameDispatch: (action: Action) => void;
-  peerDataConnection: DataConnection;
   playerNumber: number;
   turnNumber: number;
   sourceFactoryNumber: number | undefined;
+  isLocalGame: boolean;
 }) {
   const [clickedColor, setClickedColor] = useState<string | undefined>(
     undefined,
@@ -34,11 +33,14 @@ function Factory({
       tileColor: group.tileColor,
       tileCount: group.tileCount,
       tilesIndex: index,
-      peerDataConnection: peerDataConnection,
     });
   }
 
   function tileIsDisabled(): boolean {
+    if (isLocalGame) {
+      return false;
+    }
+
     return playerNumber === turnNumber % 2;
   }
 

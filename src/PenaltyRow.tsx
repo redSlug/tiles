@@ -12,13 +12,15 @@ function PenaltyRow({
   playerNumber,
   turnNumber,
   source,
+  isLocalGame,
 }: {
   gameDispatch: (action: Action) => void;
-  peerDataConnection: DataConnection;
+  peerDataConnection: DataConnection | undefined;
   tiles: Array<PenaltyTile>;
   playerNumber: number;
   turnNumber: number;
   source: Source | undefined;
+  isLocalGame: boolean;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -48,8 +50,9 @@ function PenaltyRow({
     setIsProcessing(true);
     gameDispatch({
       type: 'click_penalty_destination',
-      peerDataConnection: peerDataConnection!,
+      peerDataConnection: peerDataConnection,
       playerNumber,
+      isLocalGame,
     });
     setIsProcessing(false);
   }

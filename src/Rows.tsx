@@ -12,12 +12,14 @@ function Rows({
   state,
   playerNumber,
   overflowTiles,
+  isLocalGame,
 }: {
   gameDispatch: (action: Action) => void;
-  peerDataConnection: DataConnection;
+  peerDataConnection: DataConnection | undefined;
   state: GameState;
   playerNumber: number;
   overflowTiles: Array<PenaltyTile>;
+  isLocalGame: boolean;
 }) {
   const { source, playerRows, finalPlayerRows } = state as GameState;
 
@@ -54,8 +56,9 @@ function Rows({
     gameDispatch({
       type: 'click_destination',
       rowNumber: index,
-      peerDataConnection: peerDataConnection!,
+      peerDataConnection: peerDataConnection,
       playerNumber,
+      isLocalGame,
     });
     setIsProcessing(false);
   }
@@ -87,6 +90,7 @@ function Rows({
         playerNumber={playerNumber}
         turnNumber={state.turnNumber}
         source={state.source}
+        isLocalGame={isLocalGame}
       />
       {rows.map((row: Row, rowIndex: number) => (
         <div className={'row-container'} key={rowIndex}>

@@ -67,7 +67,7 @@ function sendGameStateToPeer(
   action: ClickDestinationAction | ClickPenaltyDestinationAction,
 ) {
   try {
-    action.peerDataConnection.send(JSON.stringify(state));
+    action.peerDataConnection!.send(JSON.stringify(state));
   } catch (error) {
     console.error('could not send to peer', {
       error,
@@ -252,7 +252,10 @@ function endPlayerTurn(
     turnNumber: state.turnNumber + 1,
     playerScores: [player0Score, player1Score],
   };
-  sendGameStateToPeer(newGameState, action);
+  if (!action.isLocalGame) {
+    sendGameStateToPeer(newGameState, action);
+  }
+
   console.log('sent newGameState in endPlayerTurn', newGameState);
   return newGameState;
 }

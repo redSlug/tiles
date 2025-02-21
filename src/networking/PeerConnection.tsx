@@ -3,6 +3,7 @@ import Peer, { DataConnection } from 'peerjs';
 import { Action, GameState } from '../types/all.ts';
 import './PeerConnection.css';
 import { usePeerJsStore } from './PeerStore.ts';
+import Button from '../components/Button.tsx';
 
 const baseUrl = import.meta.env.VITE_BASE_URL || 'garbage';
 
@@ -124,9 +125,7 @@ function PeerConnection({
   if (peerShareCode === undefined && myPeerId !== '') {
     return (
       <div>
-        <button
-          className={'share-button'}
-          key={`share-game`}
+        <Button
           onClick={() => {
             const shareLink = `${baseUrl}/#/game/${myPeerId}`;
             navigator.clipboard
@@ -143,9 +142,8 @@ function PeerConnection({
               .then(() => console.log('successfully shared'))
               .catch(error => console.log('errored sharing', error));
           }}
-        >
-          Click and share to play with friend
-        </button>
+          value="Click + share to play with remote friend"
+        />
       </div>
     );
   }

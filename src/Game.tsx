@@ -10,13 +10,21 @@ import FinalRows from './FinalRows.tsx';
 import { getInitialState } from './state/initialGame.ts';
 import { usePeerJsStore } from './networking/PeerStore.ts';
 import PeerConnection from './networking/PeerConnection.tsx';
+import Button from './components/Button.tsx';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
   const { shareCode } = useParams();
 
   const zustandConnection = usePeerJsStore(state => state.zustandConnection);
-  const [playerNumber, setPlayerNumber] = useState(1);
+  const [playerNumber, setPlayerNumber] = useState<number>(1);
+  const [isLocalGame, setIsLocalGame] = useState<boolean>(false);
+
+  function playLocalButtonHandler() {
+    console.log('playLocalButtonHandler');
+    setIsLocalGame(true);
+    console.log('isLocalGame', isLocalGame);
+  }
 
   function getTitleString(): string {
     if (state.isGameOver) {
@@ -32,6 +40,10 @@ function Game() {
       return 'game over - you lose!';
     }
 
+    if (isLocalGame) {
+      return 'local game';
+    }
+
     if (zustandConnection === undefined) {
       return 'not connected';
     }
@@ -40,17 +52,76 @@ function Game() {
       ? 'waiting for friend'
       : 'your turn';
   }
+
   const titleString = getTitleString();
+
+  if (isLocalGame) {
+    return (
+      <div className="game-container">
+        <h1 className={'title-string'}>{titleString}</h1>
+        <div className={'break'}></div>
+        <Factories
+          state={state}
+          gameDispatch={dispatch}
+          playerNumber={playerNumber}
+          isLocalGame={true}
+        />
+
+        <div className={'break'}></div>
+
+        <div className={'destinations'}>
+          <div className={'player-board'}>
+            <Rows
+              gameDispatch={dispatch}
+              peerDataConnection={undefined}
+              state={state}
+              playerNumber={playerNumber}
+              overflowTiles={state.playerPenaltyRows[playerNumber]}
+              isLocalGame={true}
+            />
+            <FinalRows
+              finalRows={state.finalPlayerRows[playerNumber]}
+              playerName={'player 1'}
+              playerScore={state.playerScores[playerNumber]}
+            />
+          </div>
+          <h2 className={'divider'} />
+          <div className={'player-board'}>
+            <Rows
+              gameDispatch={dispatch}
+              peerDataConnection={undefined}
+              state={state}
+              playerNumber={playerNumber === 0 ? 1 : 0}
+              overflowTiles={
+                state.playerPenaltyRows[playerNumber === 0 ? 1 : 0]
+              }
+              isLocalGame={true}
+            />
+            <FinalRows
+              finalRows={state.finalPlayerRows[playerNumber === 0 ? 1 : 0]}
+              playerName={'player 2'}
+              playerScore={state.playerScores[playerNumber === 0 ? 1 : 0]}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (zustandConnection === undefined) {
     return (
-      <>
+      <div className="button-container">
+        <Button
+          onClick={playLocalButtonHandler}
+          value="Click to play with local friend"
+        />
         <PeerConnection
           gameState={state}
           gameDispatch={dispatch}
           peerShareCode={shareCode}
           setPlayerNumber={setPlayerNumber}
         />
-      </>
+      </div>
     );
   }
 
@@ -61,8 +132,8 @@ function Game() {
       <Factories
         state={state}
         gameDispatch={dispatch}
-        peerDataConnection={zustandConnection!}
         playerNumber={playerNumber}
+        isLocalGame={false}
       />
 
       <div className={'break'}></div>
@@ -75,6 +146,7 @@ function Game() {
             state={state}
             playerNumber={playerNumber}
             overflowTiles={state.playerPenaltyRows[playerNumber]}
+            isLocalGame={false}
           />
           <FinalRows
             finalRows={state.finalPlayerRows[playerNumber]}
@@ -90,6 +162,7 @@ function Game() {
             state={state}
             playerNumber={playerNumber === 0 ? 1 : 0}
             overflowTiles={state.playerPenaltyRows[playerNumber === 0 ? 1 : 0]}
+            isLocalGame={false}
           />
           <FinalRows
             finalRows={state.finalPlayerRows[playerNumber === 0 ? 1 : 0]}

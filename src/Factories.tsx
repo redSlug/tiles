@@ -1,18 +1,17 @@
 import './Factories.css';
 import Factory from './Factory.tsx';
 import { Action, GameState } from './types/all.ts';
-import { DataConnection } from 'peerjs';
 
 function Factories({
   state,
   gameDispatch,
-  peerDataConnection,
   playerNumber,
+  isLocalGame,
 }: {
   state: GameState;
   gameDispatch: (action: Action) => void;
-  peerDataConnection: DataConnection;
   playerNumber: number;
+  isLocalGame: boolean;
 }) {
   return (
     <div className="factories-container">
@@ -22,10 +21,10 @@ function Factories({
             factoryNumber={index}
             factoryColorGroups={factory.tiles}
             gameDispatch={gameDispatch}
-            peerDataConnection={peerDataConnection!}
             playerNumber={playerNumber}
             turnNumber={state.turnNumber}
             sourceFactoryNumber={state.source?.factoryNumber}
+            isLocalGame={isLocalGame}
           />
         </div>
       ))}
