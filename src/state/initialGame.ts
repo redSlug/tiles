@@ -1,4 +1,4 @@
-import { Factory, GameState } from '../types/all';
+import { Factory, GameState, Row } from '../types/all';
 
 export function getNewBagOfTiles(): Array<string> {
   const duplicate = (arr: Array<string>, times: number) =>
@@ -61,7 +61,7 @@ export function getEmptyPenaltyRows() {
   ];
 }
 
-export function getEmptyPlayerRows() {
+export function getEmptyPlayerRows(): Array<Array<Row>> {
   return [
     [
       { openSpaceCount: 1, tileColor: undefined },

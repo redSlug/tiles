@@ -12,9 +12,21 @@ import { OVERFLOW_FACTORY_NUMBER } from '../constants/all';
 import {
   getNewBagOfTiles,
   getEmptyPenaltyRows,
-  getEmptyPlayerRows,
   getInitialFactories,
+  getEmptyPlayerRows,
 } from './initialGame';
+
+function clearFullPlayerRows(rows: Array<Array<Row>>) {
+  const newPlayerRows = getEmptyPlayerRows();
+  for (let playerIndex = 0; playerIndex < rows.length; playerIndex++) {
+    for (let rowIndex = 0; rowIndex < rows[playerIndex].length; rowIndex++) {
+      if (rows[playerIndex][rowIndex].openSpaceCount > 0) {
+        newPlayerRows[playerIndex][rowIndex] = rows[playerIndex][rowIndex];
+      }
+    }
+  }
+  return newPlayerRows;
+}
 
 function manageWhiteTile(
   sourceTiles: Array<FactoryColorGroup>,
@@ -239,7 +251,7 @@ function endPlayerTurn(
       state.bagOfTiles = getNewBagOfTiles();
     }
 
-    state.playerRows = getEmptyPlayerRows();
+    state.playerRows = clearFullPlayerRows(state.playerRows);
     state.playerPenaltyRows = getEmptyPenaltyRows();
     factories = getInitialFactories(state.bagOfTiles.slice(0, 20));
     state.bagOfTiles = state.bagOfTiles.slice(20, state.bagOfTiles.length);
