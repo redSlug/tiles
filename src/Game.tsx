@@ -15,7 +15,6 @@ import Button from './components/Button.tsx';
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
   const { shareCode } = useParams();
-
   const zustandConnection = usePeerJsStore(state => state.zustandConnection);
   const [playerNumber, setPlayerNumber] = useState<number>(1);
   const [isLocalGame, setIsLocalGame] = useState<boolean>(false);
@@ -111,10 +110,14 @@ function Game() {
   if (zustandConnection === undefined) {
     return (
       <div className="button-container">
-        <Button
-          onClick={playLocalButtonHandler}
-          value="Click to play with local friend"
-        />
+        {shareCode === undefined ? (
+          <Button
+            onClick={playLocalButtonHandler}
+            value="Click to play with local friend"
+          />
+        ) : (
+          <div>loading</div>
+        )}
         <PeerConnection
           gameState={state}
           gameDispatch={dispatch}
