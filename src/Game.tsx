@@ -136,7 +136,7 @@ function Game() {
             value="Click to play with local friend"
           />
         ) : (
-          <div>loading</div>
+          <div className={'title-string'}>loading</div>
         )}
         <PeerConnection
           gameState={state}
