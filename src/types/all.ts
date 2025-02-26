@@ -46,6 +46,7 @@ export type GameState = {
 
 export type SetPeerGameStateAction = {
   type: 'set_peer_game_state';
+  peerId: string;
   peerGameState: GameState;
 };
 

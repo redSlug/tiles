@@ -9,6 +9,7 @@ import {
   clickDestination,
   clickPenaltyDestination,
 } from './clickDestination.ts';
+import { setLocalStorage } from '../storage/localStorage.ts';
 
 function clickRouterReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
@@ -29,8 +30,7 @@ function clickRouterReducer(state: GameState, action: Action): GameState {
 }
 
 function setPeerGameState(action: SetPeerGameStateAction) {
-  console.log('peer game state to set', action.peerGameState);
-  return { ...action.peerGameState };
+  return setLocalStorage(action.peerGameState, action.peerId);
 }
 
 function clickSource(state: GameState, action: ClickSourceAction) {

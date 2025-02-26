@@ -2,7 +2,7 @@ import './App.css';
 import './Game.css';
 
 import { useGameState } from './state/useGameState.ts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Rows from './Rows.tsx';
 import { useParams } from 'react-router-dom';
 import Factories from './Factories.tsx';
@@ -11,6 +11,7 @@ import { getInitialState } from './state/initialGame.ts';
 import { usePeerJsStore } from './networking/PeerStore.ts';
 import PeerConnection from './networking/PeerConnection.tsx';
 import Button from './components/Button.tsx';
+import { getLocalStorage } from './storage/localStorage.ts';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
@@ -18,6 +19,25 @@ function Game() {
   const zustandConnection = usePeerJsStore(state => state.zustandConnection);
   const [playerNumber, setPlayerNumber] = useState<number>(1);
   const [isLocalGame, setIsLocalGame] = useState<boolean>(false);
+
+  useEffect(() => {
+    // if there is a share code, refresh uses game state stored in local storage
+    // so moves are not reverted
+    if (shareCode) {
+      const storedState = getLocalStorage(shareCode);
+      if (
+        storedState !== undefined &&
+        storedState.turnNumber > state.turnNumber
+      ) {
+        console.log('out of turn, setting state to stored state', storedState);
+        dispatch({
+          type: 'set_peer_game_state',
+          peerId: shareCode,
+          peerGameState: storedState,
+        });
+      }
+    }
+  }); // Empty dependency ensures this runs upon refresh
 
   function playLocalButtonHandler() {
     console.log('playLocalButtonHandler');

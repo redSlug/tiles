@@ -87,6 +87,7 @@ function PeerConnection({
             setIsConnected(true);
             gameDispatch({
               type: 'set_peer_game_state',
+              peerId: peerShareCode, // consistent with the other client
               peerGameState: getParsedGameState(data as string),
             });
           });
@@ -100,10 +101,26 @@ function PeerConnection({
         setIsConnected(true);
         gameDispatch({
           type: 'set_peer_game_state',
+          peerId: peer?.id,
           peerGameState: getParsedGameState(data as string),
         });
       });
       setTimeout(() => sendInitialGameToPeer(conn), 2000);
+    });
+
+    peer?.on('disconnected', function () {
+      console.log('Connection lost');
+      alert('peer disconnected. reconnecting');
+      peer.reconnect();
+    });
+    peer?.on('close', function () {
+      setIsConnected(false); // this doesn't do much
+      console.log('Connection destroyed');
+      alert('peer closed');
+    });
+    peer?.on('error', function (err) {
+      console.log('error', err);
+      alert('peer error' + err);
     });
   }, [peer]);
 
