@@ -23,6 +23,7 @@ npm run deploy
 
 ## Enhancement ideas
 
+- make code more readable by having separate Peer / page for host vs friend
 - make it a multi 2-4 player game
 - calculate end of round scores using contiguous multipliers
 - do end of round cleanup (remove tile from rows and move to final rows)
