@@ -4,23 +4,11 @@ import { Action, GameState } from '../types/all.ts';
 import './PeerConnection.css';
 import { usePeerJsStore } from './PeerStore.ts';
 import Button from '../components/Button.tsx';
+import { getParsedGameState, peerConfig } from './Shared.ts';
 
 const baseUrl = import.meta.env.VITE_BASE_URL || 'garbage';
 
-const username = import.meta.env.VITE_TURN_SERVER_USERNAME || 'garbage';
-const credential = import.meta.env.VITE_TURN_SERVER_CREDENTIAL || 'garbage';
-
-function getParsedGameState(data: string): GameState {
-  // Correct data that altered in transport
-  return JSON.parse(data, (_, value) => {
-    if (value === null) {
-      return undefined;
-    }
-    return value;
-  });
-}
-
-function PeerConnection({
+function HostPeerConnection({
   gameState,
   gameDispatch,
   peerShareCode,
@@ -41,58 +29,13 @@ function PeerConnection({
   const [peer, setPeer] = useState<undefined | Peer>(undefined);
 
   useEffect(() => {
-    setPeer(
-      new Peer({
-        config: {
-          iceServers: [
-            {
-              urls: 'stun:stun.relay.metered.ca:80',
-            },
-            {
-              urls: 'turn:global.relay.metered.ca:80',
-              username,
-              credential,
-            },
-            {
-              urls: 'turn:global.relay.metered.ca:80?transport=tcp',
-              username,
-              credential,
-            },
-            {
-              urls: 'turn:global.relay.metered.ca:443',
-              username,
-              credential,
-            },
-            {
-              urls: 'turns:global.relay.metered.ca:443?transport=tcp',
-              username,
-              credential,
-            },
-          ],
-        },
-      }),
-    );
+    setPeer(new Peer(peerConfig));
   }, []);
 
   useEffect(() => {
     peer?.on('open', id => {
       setMyPeerId(id);
       console.log('in PeerConnection useEffect on open, peerId', id);
-      if (peerShareCode !== undefined) {
-        const conn = peer.connect(peerShareCode);
-        conn?.on('open', () => {
-          conn?.on('data', data => {
-            setZustandConnection(conn);
-            console.log('received data');
-            setIsConnected(true);
-            gameDispatch({
-              type: 'set_peer_game_state',
-              peerId: peerShareCode, // consistent with the other client
-              peerGameState: getParsedGameState(data as string),
-            });
-          });
-        });
-      }
     });
     peer?.on('connection', (conn: DataConnection) => {
       setZustandConnection(conn);
@@ -166,4 +109,4 @@ function PeerConnection({
   }
 }
 
-export default PeerConnection;
+export default HostPeerConnection;

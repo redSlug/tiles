@@ -6,9 +6,10 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getInitialState } from './state/initialGame.ts';
 import { usePeerJsStore } from './networking/PeerStore.ts';
-import PeerConnection from './networking/PeerConnection.tsx';
 import Button from './components/Button.tsx';
 import Board from './Board.tsx';
+import HostPeerConnection from './networking/HostPeerConnection.tsx';
+import FriendPeerConnection from './networking/FriendPeerConnection.tsx';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
@@ -69,18 +70,24 @@ function Game() {
     return (
       <div className="button-container">
         {shareCode === undefined ? (
-          <Button
-            onClick={playLocalButtonHandler}
-            value="Click to play with local friend"
-          />
+          <>
+            <Button
+              onClick={playLocalButtonHandler}
+              value="Click to play with local friend"
+            />
+            <HostPeerConnection
+              gameState={state}
+              gameDispatch={dispatch}
+              peerShareCode={shareCode}
+              setPlayerNumber={setPlayerNumber}
+            />
+          </>
         ) : (
           <div className={'title-string'}>loading</div>
         )}
-        <PeerConnection
-          gameState={state}
+        <FriendPeerConnection
           gameDispatch={dispatch}
           peerShareCode={shareCode}
-          setPlayerNumber={setPlayerNumber}
         />
       </div>
     );
