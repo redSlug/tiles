@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Peer, { DataConnection } from 'peerjs';
 import { Action, GameState } from '../types/all.ts';
 import './PeerConnection.css';
@@ -32,10 +32,24 @@ function HostPeerConnection({
     setPeer(new Peer(peerConfig));
   }, []);
 
+  const sendInitialGameToPeer = useCallback(
+    (conn: DataConnection) => {
+      if (conn) {
+        setShouldSendMessage(!shouldSendMessage);
+        conn.send(JSON.stringify(gameState));
+        setIsConnected(true);
+        setPlayerNumber(0);
+      } else {
+        console.log('no connection found', conn);
+      }
+    },
+    [gameState],
+  );
+
   useEffect(() => {
     peer?.on('open', id => {
       setMyPeerId(id);
-      console.log('in PeerConnection useEffect on open, peerId', id);
+      console.log('==> host in PeerConnection useEffect on open, peerId', id);
     });
     peer?.on('connection', (conn: DataConnection) => {
       setZustandConnection(conn);
@@ -65,18 +79,7 @@ function HostPeerConnection({
       console.log('error', err);
       alert('peer error' + err);
     });
-  }, [peer]);
-
-  const sendInitialGameToPeer = (conn: DataConnection) => {
-    if (conn) {
-      setShouldSendMessage(!shouldSendMessage);
-      conn.send(JSON.stringify(gameState));
-      setIsConnected(true);
-      setPlayerNumber(0);
-    } else {
-      console.log('no connection found', conn);
-    }
-  };
+  }, [peer, sendInitialGameToPeer]);
 
   if (isConnected) {
     return <></>;

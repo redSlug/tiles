@@ -83,12 +83,14 @@ function Game() {
             />
           </>
         ) : (
-          <div className={'title-string'}>loading</div>
+          <>
+            <div className={'title-string'}>loading</div>
+            <FriendPeerConnection
+              gameDispatch={dispatch}
+              peerShareCode={shareCode}
+            />
+          </>
         )}
-        <FriendPeerConnection
-          gameDispatch={dispatch}
-          peerShareCode={shareCode}
-        />
       </div>
     );
   }
