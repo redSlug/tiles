@@ -34,6 +34,7 @@ function HostPeerConnection({
 
   const sendInitialGameToPeer = useCallback(
     (conn: DataConnection) => {
+      console.log('=> host sending initial game', conn);
       if (conn) {
         setShouldSendMessage(!shouldSendMessage);
         conn.send(JSON.stringify(gameState));
@@ -49,7 +50,6 @@ function HostPeerConnection({
   useEffect(() => {
     peer?.on('open', id => {
       setMyPeerId(id);
-      console.log('==> host in PeerConnection useEffect on open, peerId', id);
     });
     peer?.on('connection', (conn: DataConnection) => {
       setZustandConnection(conn);
@@ -62,13 +62,14 @@ function HostPeerConnection({
           peerGameState: getParsedGameState(data as string),
         });
       });
-      setTimeout(() => sendInitialGameToPeer(conn), 2000);
+      conn.on('open', () => {
+        sendInitialGameToPeer(conn);
+      });
     });
 
     peer?.on('disconnected', function () {
       console.log('Connection lost');
       alert('peer disconnected. reconnecting');
-      peer.reconnect();
     });
     peer?.on('close', function () {
       setIsConnected(false); // this doesn't do much

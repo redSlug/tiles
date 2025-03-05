@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Peer, { DataConnection } from 'peerjs';
+import Peer from 'peerjs';
 import { Action } from '../types/all.ts';
 import './PeerConnection.css';
 import { usePeerJsStore } from './PeerStore.ts';
@@ -25,30 +25,14 @@ function FriendPeerConnection({
 
   useEffect(() => {
     peer?.on('open', id => {
-      console.log('==> friend in PeerConnection useEffect on open, peerId', id);
-
       const conn = peer.connect(peerShareCode!);
-      conn?.on('open', () => {
-        conn?.on('data', data => {
-          setZustandConnection(conn);
-          console.log('received data');
-          setIsConnected(true);
-          gameDispatch({
-            type: 'set_peer_game_state',
-            peerId: peerShareCode!,
-            peerGameState: getParsedGameState(data as string),
-          });
-        });
-      });
-    });
-    peer?.on('connection', (conn: DataConnection) => {
-      setZustandConnection(conn);
-      conn.on('data', data => {
-        console.log('received data');
+      conn?.on('data', data => {
+        setZustandConnection(conn);
+        console.log('received data in peer open', id, Date.now());
         setIsConnected(true);
         gameDispatch({
           type: 'set_peer_game_state',
-          peerId: peer?.id,
+          peerId: peerShareCode!,
           peerGameState: getParsedGameState(data as string),
         });
       });
@@ -57,7 +41,6 @@ function FriendPeerConnection({
     peer?.on('disconnected', function () {
       console.log('==> friend Connection lost');
       alert('peer disconnected. reconnecting');
-      peer.reconnect();
     });
     peer?.on('close', function () {
       setIsConnected(false); // this doesn't do much
