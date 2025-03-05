@@ -44,58 +44,9 @@ function Board({
     }
   });
 
-  if (isLocalGame) {
-    return (
-      <div className="game-container">
-        <h1 className={'title-string'}>{titleString}</h1>
-        <div className={'break'}></div>
-        <Factories
-          state={state}
-          gameDispatch={dispatch}
-          playerNumber={playerNumber}
-          isLocalGame={true}
-        />
-
-        <div className={'break'}></div>
-
-        <div className={'destinations'}>
-          <div className={'player-board'}>
-            <Rows
-              gameDispatch={dispatch}
-              peerDataConnection={undefined}
-              state={state}
-              playerNumber={playerNumber}
-              overflowTiles={state.playerPenaltyRows[playerNumber]}
-              isLocalGame={true}
-            />
-            <FinalRows
-              finalRows={state.finalPlayerRows[playerNumber]}
-              playerName={'player 1'}
-              playerScore={state.playerScores[playerNumber]}
-            />
-          </div>
-          <h2 className={'divider'} />
-          <div className={'player-board'}>
-            <Rows
-              gameDispatch={dispatch}
-              peerDataConnection={undefined}
-              state={state}
-              playerNumber={playerNumber === 0 ? 1 : 0}
-              overflowTiles={
-                state.playerPenaltyRows[playerNumber === 0 ? 1 : 0]
-              }
-              isLocalGame={true}
-            />
-            <FinalRows
-              finalRows={state.finalPlayerRows[playerNumber === 0 ? 1 : 0]}
-              playerName={'player 2'}
-              playerScore={state.playerScores[playerNumber === 0 ? 1 : 0]}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const player1Name = isLocalGame ? 'your' : 'player 1';
+  const player2Name = isLocalGame ? 'friend' : 'player 2';
+  const peerDataConnection = isLocalGame ? undefined : zustandConnection;
 
   return (
     <div className="game-container">
@@ -105,7 +56,7 @@ function Board({
         state={state}
         gameDispatch={dispatch}
         playerNumber={playerNumber}
-        isLocalGame={false}
+        isLocalGame={isLocalGame}
       />
 
       <div className={'break'}></div>
@@ -118,11 +69,11 @@ function Board({
             state={state}
             playerNumber={playerNumber}
             overflowTiles={state.playerPenaltyRows[playerNumber]}
-            isLocalGame={false}
+            isLocalGame={isLocalGame}
           />
           <FinalRows
             finalRows={state.finalPlayerRows[playerNumber]}
-            playerName={'your'}
+            playerName={player1Name}
             playerScore={state.playerScores[playerNumber]}
           />
         </div>
@@ -130,15 +81,15 @@ function Board({
         <div className={'player-board'}>
           <Rows
             gameDispatch={dispatch}
-            peerDataConnection={zustandConnection!}
+            peerDataConnection={peerDataConnection!}
             state={state}
             playerNumber={playerNumber === 0 ? 1 : 0}
             overflowTiles={state.playerPenaltyRows[playerNumber === 0 ? 1 : 0]}
-            isLocalGame={false}
+            isLocalGame={isLocalGame}
           />
           <FinalRows
             finalRows={state.finalPlayerRows[playerNumber === 0 ? 1 : 0]}
-            playerName={"friend's"}
+            playerName={player2Name}
             playerScore={state.playerScores[playerNumber === 0 ? 1 : 0]}
           />
         </div>
