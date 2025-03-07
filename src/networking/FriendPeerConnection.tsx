@@ -28,7 +28,7 @@ function FriendPeerConnection({
       const conn = peer.connect(peerShareCode!);
       conn?.on('data', data => {
         setZustandConnection(conn);
-        console.log('received data in peer open', id, Date.now());
+        console.log('==> friend received data in peer open', id, Date.now());
         setIsConnected(true);
         gameDispatch({
           type: 'set_peer_game_state',
@@ -39,16 +39,16 @@ function FriendPeerConnection({
     });
 
     peer?.on('disconnected', function () {
-      console.log('==> friend Connection lost');
-      alert('peer disconnected. reconnecting');
+      console.log('==> friend connection lost, reconnecting');
+      peer.reconnect();
     });
     peer?.on('close', function () {
       setIsConnected(false); // this doesn't do much
-      console.log('Connection destroyed');
+      console.log('==> friend connection closed');
       alert('peer closed');
     });
     peer?.on('error', function (err) {
-      console.log('error', err);
+      console.log('==> friend error', err);
       alert('peer error' + err);
     });
   }, [peer]);

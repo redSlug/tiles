@@ -41,7 +41,7 @@ function HostPeerConnection({
         setIsConnected(true);
         setPlayerNumber(0);
       } else {
-        console.log('no connection found', conn);
+        console.log('==> host no connection found', conn);
       }
     },
     [gameState],
@@ -54,7 +54,7 @@ function HostPeerConnection({
     peer?.on('connection', (conn: DataConnection) => {
       setZustandConnection(conn);
       conn.on('data', data => {
-        console.log('received data');
+        console.log('==> host received data');
         setIsConnected(true);
         gameDispatch({
           type: 'set_peer_game_state',
@@ -68,12 +68,12 @@ function HostPeerConnection({
     });
 
     peer?.on('disconnected', function () {
-      console.log('Connection lost');
-      alert('peer disconnected. reconnecting');
+      console.log('connection lost, reconnecting');
+      peer.reconnect();
     });
     peer?.on('close', function () {
       setIsConnected(false); // this doesn't do much
-      console.log('Connection destroyed');
+      console.log('==> host connection closed');
       alert('peer closed');
     });
     peer?.on('error', function (err) {
@@ -94,17 +94,19 @@ function HostPeerConnection({
             const shareLink = `${baseUrl}/#/game/${myPeerId}`;
             navigator.clipboard
               .writeText(shareLink)
-              .then(() => console.log('successfully copying to clipboard'))
+              .then(() =>
+                console.log('==> host successfully copying to clipboard'),
+              )
               .catch(error =>
-                console.log('errored copying to clipboard', error),
+                console.log('==> host errored copying to clipboard', error),
               );
             navigator
               .share({
                 title: 'tiles game',
                 url: shareLink,
               })
-              .then(() => console.log('successfully shared'))
-              .catch(error => console.log('errored sharing', error));
+              .then(() => console.log('==> host successfully shared'))
+              .catch(error => console.log('==> host errored sharing', error));
           }}
           value="Click + share to play with remote friend"
         />
