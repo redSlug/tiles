@@ -3,7 +3,8 @@
 }
 
 .color-button {
-  background-color: var(--bg-color);
+  background-color: transparent;
+  appearance: none;
   border: none;
   padding: 0;
   position: absolute;

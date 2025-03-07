@@ -16,11 +16,13 @@
 :root[data-theme='dark'] {
   --text-color: lightskyblue;
   --background-color: darkblue;
+  --dark-mode-button-color: #9463da;
 }
 
 :root[data-theme='light'] {
   --text-color: darkblue;
   --background-color: lightskyblue;
+  --dark-mode-button-color: #5983dd;
 }
 
 body {
