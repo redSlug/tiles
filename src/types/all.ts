@@ -35,6 +35,7 @@ export type Player = {
   penaltyRows: Array<PenaltyTile>;
   rows: Array<Row>;
   finalRows: Array<Array<FinalTile>>;
+  score: number;
 };
 
 export type GameState = {
@@ -44,7 +45,6 @@ export type GameState = {
   bagOfTiles: Array<string>;
   peerId?: string;
   turnNumber: number;
-  playerScores: Array<number>;
   isGameOver: boolean;
 };
 

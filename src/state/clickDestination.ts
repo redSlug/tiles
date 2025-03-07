@@ -241,17 +241,17 @@ function endPlayerTurn(
   factories: Array<Factory>,
   action: ClickDestinationAction | ClickPenaltyDestinationAction,
 ) {
-  let player0Score = state.playerScores[0];
-  let player1Score = state.playerScores[1];
+  const player0 = state.players[0];
+  const player1 = state.players[1];
   const isRoundOver = factories.every(c => c.tiles.length == 0);
 
   if (isRoundOver) {
-    player0Score += calculatePlayerScoreWhilePlacingFinalTiles(
+    player0.score += calculatePlayerScoreWhilePlacingFinalTiles(
       state.players[0].rows,
       state.players[0].penaltyRows,
       state.players[0].finalRows,
     );
-    player1Score += calculatePlayerScoreWhilePlacingFinalTiles(
+    player1.score += calculatePlayerScoreWhilePlacingFinalTiles(
       state.players[1].rows,
       state.players[1].penaltyRows,
       state.players[1].finalRows,
@@ -276,8 +276,8 @@ function endPlayerTurn(
     state.players[1].finalRows,
   ];
   if (isGameOver(finalPlayerRows)) {
-    player0Score += calculateEndGameBonus(state.players[0].finalRows);
-    player1Score += calculateEndGameBonus(state.players[1].finalRows);
+    player0.score += calculateEndGameBonus(state.players[0].finalRows);
+    player1.score += calculateEndGameBonus(state.players[1].finalRows);
   }
 
   const newGameState = {
@@ -286,7 +286,7 @@ function endPlayerTurn(
     factories,
     source: undefined,
     turnNumber: state.turnNumber + 1,
-    playerScores: [player0Score, player1Score],
+    players: [{ ...player0 }, { ...player1 }],
   };
   if (!action.isLocalGame) {
     sendGameStateToPeer(newGameState, action);

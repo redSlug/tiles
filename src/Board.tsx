@@ -74,7 +74,7 @@ function Board({
           <FinalRows
             finalRows={state.players[playerNumber].finalRows}
             playerName={player1Name}
-            playerScore={state.playerScores[playerNumber]}
+            playerScore={state.players[playerNumber].score}
           />
         </div>
         <h2 className={'divider'} />
@@ -92,7 +92,7 @@ function Board({
           <FinalRows
             finalRows={state.players[playerNumber === 0 ? 1 : 0].finalRows}
             playerName={player2Name}
-            playerScore={state.playerScores[playerNumber === 0 ? 1 : 0]}
+            playerScore={state.players[playerNumber === 0 ? 1 : 0].score}
           />
         </div>
       </div>

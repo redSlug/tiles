@@ -26,12 +26,12 @@ function Game() {
 
   function getTitleString(): string {
     if (state.isGameOver) {
-      if (state.playerScores[0] == state.playerScores[1]) {
+      if (state.players[0].score === state.players[1].score) {
         return 'game over - tie game';
       }
       if (
-        state.playerScores[playerNumber] >
-        state.playerScores[playerNumber === 0 ? 1 : 0]
+        state.players[playerNumber].score >
+        state.players[playerNumber === 0 ? 1 : 0].score
       ) {
         return 'game over - you win!';
       }

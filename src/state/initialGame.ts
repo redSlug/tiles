@@ -113,6 +113,7 @@ export function getPlayer(): Player {
     penaltyRows: getEmptyPenaltyRows(),
     rows: getEmptyRows(),
     finalRows: getEmptyFinalRows(),
+    score: 0,
   };
 }
 
@@ -124,7 +125,6 @@ export function getInitialState(): GameState {
 
   return {
     factories: getInitialFactories(startingTiles),
-    playerScores: [0, 0],
     players: [getPlayer(), getPlayer()],
     isGameOver: false,
     source: undefined,
