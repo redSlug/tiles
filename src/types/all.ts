@@ -31,11 +31,15 @@ export type PenaltyTile = {
   penaltyAmount: number;
 };
 
+export type Player = {
+  penaltyRows: Array<PenaltyTile>;
+  rows: Array<Row>;
+  finalRows: Array<Array<FinalTile>>;
+};
+
 export type GameState = {
   factories: Array<Factory>;
-  playerPenaltyRows: Array<Array<PenaltyTile>>;
-  playerRows: Array<Array<Row>>;
-  finalPlayerRows: Array<Array<Array<FinalTile>>>;
+  players: Array<Player>;
   source?: Source;
   bagOfTiles: Array<string>;
   peerId?: string;

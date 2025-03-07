@@ -68,11 +68,11 @@ function Board({
             peerDataConnection={zustandConnection!}
             state={state}
             playerNumber={playerNumber}
-            overflowTiles={state.playerPenaltyRows[playerNumber]}
+            overflowTiles={state.players[playerNumber].penaltyRows}
             isLocalGame={isLocalGame}
           />
           <FinalRows
-            finalRows={state.finalPlayerRows[playerNumber]}
+            finalRows={state.players[playerNumber].finalRows}
             playerName={player1Name}
             playerScore={state.playerScores[playerNumber]}
           />
@@ -84,11 +84,13 @@ function Board({
             peerDataConnection={peerDataConnection!}
             state={state}
             playerNumber={playerNumber === 0 ? 1 : 0}
-            overflowTiles={state.playerPenaltyRows[playerNumber === 0 ? 1 : 0]}
+            overflowTiles={
+              state.players[playerNumber === 0 ? 1 : 0].penaltyRows
+            }
             isLocalGame={isLocalGame}
           />
           <FinalRows
-            finalRows={state.finalPlayerRows[playerNumber === 0 ? 1 : 0]}
+            finalRows={state.players[playerNumber === 0 ? 1 : 0].finalRows}
             playerName={player2Name}
             playerScore={state.playerScores[playerNumber === 0 ? 1 : 0]}
           />

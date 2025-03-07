@@ -21,10 +21,10 @@ function Rows({
   overflowTiles: Array<PenaltyTile>;
   isLocalGame: boolean;
 }) {
-  const { source, playerRows, finalPlayerRows } = state as GameState;
+  const { source, players } = state as GameState;
 
-  const rows = playerRows[playerNumber];
-  const finalRows = finalPlayerRows[playerNumber];
+  const rows = players[playerNumber].rows;
+  const finalRows = players[playerNumber].finalRows;
   const [isProcessing, setIsProcessing] = useState(false);
 
   function rowIsDisabled(

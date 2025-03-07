@@ -13,19 +13,17 @@ import {
   getNewBagOfTiles,
   getEmptyPenaltyRows,
   getInitialFactories,
-  getEmptyPlayerRows,
+  getEmptyRows,
 } from './initialGame';
 
-function clearFullPlayerRows(rows: Array<Array<Row>>) {
-  const newPlayerRows = getEmptyPlayerRows();
-  for (let playerIndex = 0; playerIndex < rows.length; playerIndex++) {
-    for (let rowIndex = 0; rowIndex < rows[playerIndex].length; rowIndex++) {
-      if (rows[playerIndex][rowIndex].openSpaceCount > 0) {
-        newPlayerRows[playerIndex][rowIndex] = rows[playerIndex][rowIndex];
-      }
+function clearFullRows(rows: Array<Row>) {
+  const newRows = getEmptyRows();
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+    if (rows[rowIndex].openSpaceCount > 0) {
+      newRows[rowIndex] = rows[rowIndex];
     }
   }
-  return newPlayerRows;
+  return newRows;
 }
 
 function manageWhiteTile(
@@ -226,6 +224,18 @@ function isGameOver(finalTiles: Array<Array<Array<FinalTile>>>): boolean {
   return false;
 }
 
+function calculateEndGameBonus(finalRows: Array<Array<FinalTile>>) {
+  // TODO: calculate other end game bonuses for column and all color full
+  let bonus = 0;
+  for (const playerFinalRow of finalRows) {
+    const emptyTiles = playerFinalRow.filter(tile => !tile.isFilled);
+    if (emptyTiles.length === 0) {
+      bonus += 2;
+    }
+  }
+  return bonus;
+}
+
 function endPlayerTurn(
   state: GameState,
   factories: Array<Factory>,
@@ -237,46 +247,42 @@ function endPlayerTurn(
 
   if (isRoundOver) {
     player0Score += calculatePlayerScoreWhilePlacingFinalTiles(
-      state.playerRows[0],
-      state.playerPenaltyRows[0],
-      state.finalPlayerRows[0],
+      state.players[0].rows,
+      state.players[0].penaltyRows,
+      state.players[0].finalRows,
     );
     player1Score += calculatePlayerScoreWhilePlacingFinalTiles(
-      state.playerRows[1],
-      state.playerPenaltyRows[1],
-      state.finalPlayerRows[1],
+      state.players[1].rows,
+      state.players[1].penaltyRows,
+      state.players[1].finalRows,
     );
 
     if (state.bagOfTiles.length < factories.length * 4) {
       state.bagOfTiles = getNewBagOfTiles();
     }
 
-    state.playerRows = clearFullPlayerRows(state.playerRows);
-    state.playerPenaltyRows = getEmptyPenaltyRows();
+    state.players[0].rows = clearFullRows(state.players[0].rows);
+    state.players[1].rows = clearFullRows(state.players[1].rows);
+
+    state.players[0].penaltyRows = getEmptyPenaltyRows();
+    state.players[1].penaltyRows = getEmptyPenaltyRows();
+
     factories = getInitialFactories(state.bagOfTiles.slice(0, 20));
     state.bagOfTiles = state.bagOfTiles.slice(20, state.bagOfTiles.length);
   }
 
-  if (isGameOver(state.finalPlayerRows)) {
-    // calculate end of game bonus
-    for (let i = 0; i < state.finalPlayerRows.length; i++) {
-      for (const playerFinalRow of state.finalPlayerRows[i]) {
-        const emptyTiles = playerFinalRow.filter(tile => !tile.isFilled);
-        if (emptyTiles.length === 0) {
-          if (i == 0) {
-            player0Score += 2;
-          } else {
-            player1Score += 2;
-          }
-        }
-      }
-    }
-    // TODO calculate end game bonuses for column and all color full
+  const finalPlayerRows = [
+    state.players[0].finalRows,
+    state.players[1].finalRows,
+  ];
+  if (isGameOver(finalPlayerRows)) {
+    player0Score += calculateEndGameBonus(state.players[0].finalRows);
+    player1Score += calculateEndGameBonus(state.players[1].finalRows);
   }
 
   const newGameState = {
     ...state,
-    isGameOver: isGameOver(state.finalPlayerRows),
+    isGameOver: isGameOver(finalPlayerRows),
     factories,
     source: undefined,
     turnNumber: state.turnNumber + 1,
@@ -298,7 +304,7 @@ export function clickPenaltyDestination(
   const { tileColor, tileCount, factoryNumber } = state.source!;
   const factories = state.factories;
   const sourceTiles = factories[factoryNumber].tiles;
-  const penaltyRow = state.playerPenaltyRows[playerNumber];
+  const penaltyRow = state.players[playerNumber].penaltyRows;
   const isOverflowFactory = factoryNumber === OVERFLOW_FACTORY_NUMBER;
 
   manageWhiteTile(sourceTiles, penaltyRow, isOverflowFactory);
@@ -350,24 +356,24 @@ export function clickDestination(
 
   manageWhiteTile(
     sourceTiles,
-    state.playerPenaltyRows[playerNumber],
+    state.players[playerNumber].penaltyRows,
     factoryNumber === OVERFLOW_FACTORY_NUMBER,
   );
 
   updatePenaltyRow(
-    state.playerPenaltyRows[playerNumber],
-    state.playerRows[playerNumber][rowNumber],
+    state.players[playerNumber].penaltyRows,
+    state.players[playerNumber].rows[rowNumber],
     tileColor,
     tileCount,
   );
 
   const openSpaceCount = calculateOpenSpaceCount(
-    state.playerRows[playerNumber][rowNumber],
+    state.players[playerNumber].rows[rowNumber],
     tileCount,
   );
 
   // Move source tile to destination row
-  state.playerRows[playerNumber][rowNumber] = { tileColor, openSpaceCount };
+  state.players[playerNumber].rows[rowNumber] = { tileColor, openSpaceCount };
 
   if (factoryNumber === OVERFLOW_FACTORY_NUMBER) {
     // Remove chosen color tiles from overflow
