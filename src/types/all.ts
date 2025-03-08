@@ -62,19 +62,21 @@ export type ClickSourceAction = {
   tilesIndex: number;
 };
 
+export type GameType = 'local' | 'remote';
+
 export type ClickDestinationAction = {
   type: 'click_destination';
   rowNumber: number;
   peerDataConnection: DataConnection | undefined;
   playerNumber: number;
-  isLocalGame: boolean;
+  gameType: GameType;
 };
 
 export type ClickPenaltyDestinationAction = {
   type: 'click_penalty_destination';
   peerDataConnection: DataConnection | undefined;
   playerNumber: number;
-  isLocalGame: boolean;
+  gameType: GameType;
 };
 
 export type ClickRoundEndAction = {

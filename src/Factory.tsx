@@ -1,6 +1,6 @@
 import './Factory.css';
 import './components/Tile.css';
-import { Action, FactoryColorGroup } from './types/all.ts';
+import { Action, FactoryColorGroup, GameType } from './types/all.ts';
 import React, { useState } from 'react';
 import Tile from './components/Tile.tsx';
 
@@ -11,7 +11,7 @@ function Factory({
   playerNumber,
   turnNumber,
   sourceFactoryNumber,
-  isLocalGame,
+  gameType,
 }: {
   factoryNumber: number;
   factoryColorGroups: Array<FactoryColorGroup>;
@@ -19,7 +19,7 @@ function Factory({
   playerNumber: number;
   turnNumber: number;
   sourceFactoryNumber: number | undefined;
-  isLocalGame: boolean;
+  gameType: GameType;
 }) {
   const [clickedColor, setClickedColor] = useState<string | undefined>(
     undefined,
@@ -37,7 +37,7 @@ function Factory({
   }
 
   function tileIsDisabled(): boolean {
-    if (isLocalGame) {
+    if (gameType === 'local') {
       return false;
     }
 

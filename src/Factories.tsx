@@ -1,18 +1,22 @@
 import './Factories.css';
+
+import { usePeerJsStore } from './networking/PeerStore.ts';
 import Factory from './Factory.tsx';
-import { Action, GameState } from './types/all.ts';
+import { Action, GameState, GameType } from './types/all.ts';
 
 function Factories({
   state,
   gameDispatch,
   playerNumber,
-  isLocalGame,
+  gameType,
 }: {
   state: GameState;
   gameDispatch: (action: Action) => void;
   playerNumber: number;
-  isLocalGame: boolean;
+  gameType: GameType;
 }) {
+  const zustandConnection = usePeerJsStore(state => state.zustandConnection);
+
   return (
     <div className="factories-container">
       {state.factories.map((factory, index: number) => (
@@ -24,7 +28,7 @@ function Factories({
             playerNumber={playerNumber}
             turnNumber={state.turnNumber}
             sourceFactoryNumber={state.source?.factoryNumber}
-            isLocalGame={isLocalGame}
+            gameType={gameType}
           />
         </div>
       ))}

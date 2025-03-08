@@ -285,7 +285,7 @@ function endPlayerTurn(
     turnNumber: state.turnNumber + 1,
     players: [{ ...player0 }, { ...player1 }],
   };
-  if (!action.isLocalGame) {
+  if (action.gameType !== 'local') {
     sendGameStateToPeer(newGameState, action);
   }
 

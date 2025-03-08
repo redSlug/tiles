@@ -1,4 +1,4 @@
-import { Action, PenaltyTile, Source } from './types/all.ts';
+import { Action, GameType, PenaltyTile, Source } from './types/all.ts';
 import Tile from './components/Tile.tsx';
 import './components/Tile.css';
 import './PenaltyRow.css';
@@ -12,7 +12,7 @@ function PenaltyRow({
   playerNumber,
   turnNumber,
   source,
-  isLocalGame,
+  gameType,
 }: {
   gameDispatch: (action: Action) => void;
   peerDataConnection: DataConnection | undefined;
@@ -20,7 +20,7 @@ function PenaltyRow({
   playerNumber: number;
   turnNumber: number;
   source: Source | undefined;
-  isLocalGame: boolean;
+  gameType: GameType;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -52,7 +52,7 @@ function PenaltyRow({
       type: 'click_penalty_destination',
       peerDataConnection: peerDataConnection,
       playerNumber,
-      isLocalGame,
+      gameType,
     });
     setIsProcessing(false);
   }

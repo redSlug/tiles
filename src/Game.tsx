@@ -10,18 +10,23 @@ import Button from './components/Button.tsx';
 import Board from './Board.tsx';
 import HostPeerConnection from './networking/HostPeerConnection.tsx';
 import FriendPeerConnection from './networking/FriendPeerConnection.tsx';
+import { GameType } from './types/all.ts';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
   const { shareCode } = useParams();
   const zustandConnection = usePeerJsStore(state => state.zustandConnection);
   const [playerNumber, setPlayerNumber] = useState<number>(1);
-  const [isLocalGame, setIsLocalGame] = useState<boolean>(false);
+  const [gameType, setGameType] = useState<GameType>('remote');
 
   function playLocalButtonHandler() {
     console.log('playLocalButtonHandler');
-    setIsLocalGame(true);
-    console.log('isLocalGame', isLocalGame);
+    setGameType('local');
+    console.log('gameType', gameType);
+  }
+
+  function playBotButtonHandler() {
+    console.log('playBotButtonHandler');
   }
 
   function getTitleString(): string {
@@ -38,7 +43,7 @@ function Game() {
       return 'game over - you lose!';
     }
 
-    if (isLocalGame) {
+    if (gameType === 'local') {
       return 'local game';
     }
 
@@ -53,13 +58,13 @@ function Game() {
 
   const titleString = getTitleString();
 
-  if (isLocalGame) {
+  if (gameType === 'local') {
     return (
       <Board
         state={state}
         dispatch={dispatch}
         titleString={titleString}
-        isLocalGame={isLocalGame}
+        gameType={gameType}
         playerNumber={playerNumber}
         shareCode={shareCode!}
       />
@@ -71,6 +76,10 @@ function Game() {
       <div className="button-container">
         {shareCode === undefined ? (
           <>
+            <Button
+              onClick={playBotButtonHandler}
+              value="Click to play with your favorite bot"
+            />
             <Button
               onClick={playLocalButtonHandler}
               value="Click to play with local friend"
@@ -100,7 +109,7 @@ function Game() {
       state={state}
       dispatch={dispatch}
       titleString={titleString}
-      isLocalGame={isLocalGame}
+      gameType={gameType}
       playerNumber={playerNumber}
       shareCode={shareCode!}
     />

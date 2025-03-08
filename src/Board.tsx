@@ -6,11 +6,11 @@ import FinalRows from './FinalRows.tsx';
 import { usePeerJsStore } from './networking/PeerStore.ts';
 import { useEffect } from 'react';
 import { getLocalStorage } from './storage/localStorage.ts';
-import { Action, GameState } from './types/all.ts';
+import { Action, GameState, GameType } from './types/all.ts';
 
 function Board({
   titleString,
-  isLocalGame,
+  gameType,
   playerNumber,
   shareCode,
   state,
@@ -19,7 +19,7 @@ function Board({
   state: GameState;
   dispatch: (action: Action) => void;
   titleString: string;
-  isLocalGame: boolean;
+  gameType: GameType;
   playerNumber: number;
   shareCode: string;
 }) {
@@ -44,9 +44,9 @@ function Board({
     }
   });
 
-  const player1Name = isLocalGame ? 'your' : 'player 1';
-  const player2Name = isLocalGame ? 'friend' : 'player 2';
-  const peerDataConnection = isLocalGame ? undefined : zustandConnection;
+  const player1Name = gameType === 'local' ? 'your' : 'player 1';
+  const player2Name = gameType === 'local' ? 'friend' : 'player 2';
+  const peerDataConnection = gameType === 'local' ? undefined : zustandConnection;
 
   return (
     <div className="game-container">
@@ -56,7 +56,7 @@ function Board({
         state={state}
         gameDispatch={dispatch}
         playerNumber={playerNumber}
-        isLocalGame={isLocalGame}
+        gameType={gameType}
       />
 
       <div className={'break'}></div>
@@ -69,7 +69,7 @@ function Board({
             state={state}
             playerNumber={playerNumber}
             overflowTiles={state.players[playerNumber].penaltyRows}
-            isLocalGame={isLocalGame}
+            gameType={gameType}
           />
           <FinalRows
             finalRows={state.players[playerNumber].finalRows}
@@ -87,7 +87,7 @@ function Board({
             overflowTiles={
               state.players[playerNumber === 0 ? 1 : 0].penaltyRows
             }
-            isLocalGame={isLocalGame}
+            gameType={gameType}
           />
           <FinalRows
             finalRows={state.players[playerNumber === 0 ? 1 : 0].finalRows}

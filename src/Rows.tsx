@@ -1,4 +1,4 @@
-import { Action, GameState, PenaltyTile, Row, Source } from './types/all.ts';
+import { Action, GameState, GameType, PenaltyTile, Row, Source } from './types/all.ts';
 import { DataConnection } from 'peerjs';
 import React, { useState } from 'react';
 import './Rows.css';
@@ -12,14 +12,14 @@ function Rows({
   state,
   playerNumber,
   overflowTiles,
-  isLocalGame,
+  gameType,
 }: {
   gameDispatch: (action: Action) => void;
   peerDataConnection: DataConnection | undefined;
   state: GameState;
   playerNumber: number;
   overflowTiles: Array<PenaltyTile>;
-  isLocalGame: boolean;
+  gameType: GameType;
 }) {
   const { source, players } = state as GameState;
 
@@ -58,7 +58,7 @@ function Rows({
       rowNumber: index,
       peerDataConnection: peerDataConnection,
       playerNumber,
-      isLocalGame,
+      gameType,
     });
     setIsProcessing(false);
   }
@@ -90,7 +90,7 @@ function Rows({
         playerNumber={playerNumber}
         turnNumber={state.turnNumber}
         source={state.source}
-        isLocalGame={isLocalGame}
+        gameType={gameType}
       />
       {rows.map((row: Row, rowIndex: number) => (
         <div className={'row-container'} key={rowIndex}>
