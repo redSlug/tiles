@@ -247,37 +247,34 @@ function endPlayerTurn(
 
   if (isRoundOver) {
     player0.score += calculatePlayerScoreWhilePlacingFinalTiles(
-      state.players[0].rows,
-      state.players[0].penaltyRows,
-      state.players[0].finalRows,
+      player0.rows,
+      player0.penaltyRows,
+      player0.finalRows,
     );
     player1.score += calculatePlayerScoreWhilePlacingFinalTiles(
-      state.players[1].rows,
-      state.players[1].penaltyRows,
-      state.players[1].finalRows,
+      player1.rows,
+      player1.penaltyRows,
+      player1.finalRows,
     );
 
     if (state.bagOfTiles.length < factories.length * 4) {
       state.bagOfTiles = getNewBagOfTiles();
     }
 
-    state.players[0].rows = clearFullRows(state.players[0].rows);
-    state.players[1].rows = clearFullRows(state.players[1].rows);
+    player0.rows = clearFullRows(player0.rows);
+    player1.rows = clearFullRows(player1.rows);
 
-    state.players[0].penaltyRows = getEmptyPenaltyRows();
-    state.players[1].penaltyRows = getEmptyPenaltyRows();
+    player0.penaltyRows = getEmptyPenaltyRows();
+    player1.penaltyRows = getEmptyPenaltyRows();
 
     factories = getInitialFactories(state.bagOfTiles.slice(0, 20));
     state.bagOfTiles = state.bagOfTiles.slice(20, state.bagOfTiles.length);
   }
 
-  const finalPlayerRows = [
-    state.players[0].finalRows,
-    state.players[1].finalRows,
-  ];
+  const finalPlayerRows = [player0.finalRows, player1.finalRows];
   if (isGameOver(finalPlayerRows)) {
-    player0.score += calculateEndGameBonus(state.players[0].finalRows);
-    player1.score += calculateEndGameBonus(state.players[1].finalRows);
+    player0.score += calculateEndGameBonus(player0.finalRows);
+    player1.score += calculateEndGameBonus(player1.finalRows);
   }
 
   const newGameState = {
@@ -309,20 +306,20 @@ export function clickPenaltyDestination(
 
   manageWhiteTile(sourceTiles, penaltyRow, isOverflowFactory);
 
-  // Fill penalty row
-  const openPenaltyIndex = penaltyRow.findIndex(
+  const firstEmptyPenaltyIndex = penaltyRow.findIndex(
     tile => tile.tileColor === undefined,
   );
   let lastIndexToFill = Math.min(
     penaltyRow.length,
-    openPenaltyIndex + tileCount,
+    firstEmptyPenaltyIndex + tileCount,
   );
   lastIndexToFill = Math.max(lastIndexToFill, 0);
-  for (let i = openPenaltyIndex; i < lastIndexToFill; i++) {
+  for (let i = firstEmptyPenaltyIndex; i < lastIndexToFill; i++) {
     if (penaltyRow[i] === undefined) {
       console.log('yoo this should never happen');
       continue;
     }
+    // fill penalty row
     penaltyRow[i].tileColor = tileColor;
   }
 
