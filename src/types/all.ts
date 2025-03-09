@@ -62,7 +62,7 @@ export type ClickSourceAction = {
   tilesIndex: number;
 };
 
-export type GameType = 'local' | 'remote';
+export type GameType = 'local' | 'remote' | 'bot';
 
 export type ClickDestinationAction = {
   type: 'click_destination';

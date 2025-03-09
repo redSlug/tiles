@@ -1,4 +1,11 @@
-import { Action, GameState, GameType, PenaltyTile, Row, Source } from './types/all.ts';
+import {
+  Action,
+  GameState,
+  GameType,
+  PenaltyTile,
+  Row,
+  Source,
+} from './types/all.ts';
 import { DataConnection } from 'peerjs';
 import React, { useState } from 'react';
 import './Rows.css';
@@ -33,19 +40,31 @@ function Rows({
     source: Source | undefined,
     isProcessing: boolean,
   ): boolean {
+    if (source === undefined) {
+      return true;
+    }
+
     const finalRow = finalRows[rowIndex];
     const colorAlreadyFull = finalRow.some(
-      tile => tile.isFilled && tile.tileColor === source?.tileColor,
+      tile => tile.isFilled && tile.tileColor === source.tileColor,
     );
-    return (
-      playerNumber === state.turnNumber % 2 ||
+
+    if (
       isProcessing ||
-      source == undefined ||
       row.openSpaceCount === 0 ||
-      (row.tileColor != undefined && row.tileColor != source!.tileColor) ||
-      source!.tileColor === 'white' ||
+      (row.tileColor != undefined && row.tileColor != source.tileColor) ||
+      source.tileColor === 'white' ||
       colorAlreadyFull
-    );
+    ) {
+      return true;
+    }
+
+    switch (gameType) {
+      case 'bot':
+        return playerNumber !== 0 || state.turnNumber % 2 !== 0;
+      default:
+        return playerNumber === state.turnNumber % 2;
+    }
   }
 
   function handleRowClick(index: number) {

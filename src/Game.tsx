@@ -2,7 +2,7 @@ import './App.css';
 import './Game.css';
 
 import { useGameState } from './state/useGameState.ts';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getInitialState } from './state/initialGame.ts';
 import { usePeerJsStore } from './networking/PeerStore.ts';
@@ -10,7 +10,12 @@ import Button from './components/Button.tsx';
 import Board from './Board.tsx';
 import HostPeerConnection from './networking/HostPeerConnection.tsx';
 import FriendPeerConnection from './networking/FriendPeerConnection.tsx';
-import { GameType } from './types/all.ts';
+import {
+  GameType,
+  ClickDestinationAction,
+  ClickPenaltyDestinationAction,
+} from './types/all.ts';
+import { makeBotMove } from './bot/makeBotMove.ts';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
@@ -18,6 +23,7 @@ function Game() {
   const zustandConnection = usePeerJsStore(state => state.zustandConnection);
   const [playerNumber, setPlayerNumber] = useState<number>(1);
   const [gameType, setGameType] = useState<GameType>('remote');
+  const [botThinking, setBotThinking] = useState<boolean>(false);
 
   function playLocalButtonHandler() {
     console.log('playLocalButtonHandler');
@@ -27,7 +33,23 @@ function Game() {
 
   function playBotButtonHandler() {
     console.log('playBotButtonHandler');
+    setGameType('bot');
+    setPlayerNumber(0);
   }
+
+  useEffect(() => {
+    if (
+      gameType === 'bot' &&
+      state.turnNumber % 2 === 1 &&
+      !state.isGameOver &&
+      !botThinking
+    ) {
+      setBotThinking(true);
+      makeBotMove(state, dispatch).then(() => {
+        setBotThinking(false);
+      });
+    }
+  }, [state.turnNumber]);
 
   function getTitleString(): string {
     if (state.isGameOver) {
@@ -47,6 +69,10 @@ function Game() {
       return 'local game';
     }
 
+    if (gameType === 'bot') {
+      return state.turnNumber % 2 === 0 ? 'your turn' : 'bot is thinking...';
+    }
+
     if (zustandConnection === undefined) {
       return 'not connected';
     }
@@ -58,7 +84,7 @@ function Game() {
 
   const titleString = getTitleString();
 
-  if (gameType === 'local') {
+  if (gameType === 'local' || gameType === 'bot') {
     return (
       <Board
         state={state}

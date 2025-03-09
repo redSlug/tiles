@@ -44,9 +44,19 @@ function Board({
     }
   });
 
-  const player1Name = gameType === 'local' ? 'your' : 'player 1';
-  const player2Name = gameType === 'local' ? 'friend' : 'player 2';
-  const peerDataConnection = gameType === 'local' ? undefined : zustandConnection;
+  let player1Name = 'player 1';
+  let player2Name = 'player 2';
+
+  if (gameType === 'local') {
+    player1Name = 'your';
+    player2Name = 'friend';
+  } else if (gameType === 'bot') {
+    player1Name = 'your';
+    player2Name = 'bot';
+  }
+
+  const peerDataConnection =
+    gameType === 'remote' ? zustandConnection : undefined;
 
   return (
     <div className="game-container">

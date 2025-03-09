@@ -41,6 +41,10 @@ function Factory({
       return false;
     }
 
+    if (gameType === 'bot') {
+      return turnNumber % 2 !== 0;
+    }
+
     return playerNumber === turnNumber % 2;
   }
 

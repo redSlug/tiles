@@ -39,7 +39,16 @@ function PenaltyRow({
     playerNumber: number,
     turnNumber: number,
   ): boolean {
-    return playerNumber === turnNumber % 2 || source == undefined;
+    if (source === undefined) {
+      return true;
+    }
+
+    switch (gameType) {
+      case 'bot':
+        return playerNumber !== 0 || turnNumber % 2 !== 0;
+      default:
+        return playerNumber === turnNumber % 2;
+    }
   }
 
   async function handleRowClick() {
