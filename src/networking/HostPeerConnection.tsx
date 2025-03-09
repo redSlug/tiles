@@ -13,11 +13,13 @@ function HostPeerConnection({
   gameDispatch,
   peerShareCode,
   setPlayerNumber,
+  onLoaded,
 }: {
   gameState: GameState;
   gameDispatch: (action: Action) => void;
   peerShareCode: string | undefined;
   setPlayerNumber: (playerNumber: number) => void;
+  onLoaded: () => void;
 }) {
   const setZustandConnection = usePeerJsStore(
     state => state.setZustandConnection,
@@ -50,6 +52,7 @@ function HostPeerConnection({
   useEffect(() => {
     peer?.on('open', id => {
       setMyPeerId(id);
+      onLoaded();
     });
     peer?.on('connection', (conn: DataConnection) => {
       setZustandConnection(conn);

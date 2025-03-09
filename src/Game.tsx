@@ -20,11 +20,11 @@ function Game() {
   const [playerNumber, setPlayerNumber] = useState<number>(1);
   const [gameType, setGameType] = useState<GameType>('remote');
   const [botThinking, setBotThinking] = useState<boolean>(false);
+  const [hostLoaded, setHostLoaded] = useState<boolean>(false);
 
   function playLocalButtonHandler() {
     console.log('playLocalButtonHandler');
     setGameType('local');
-    console.log('gameType', gameType);
   }
 
   function playBotButtonHandler() {
@@ -98,20 +98,25 @@ function Game() {
       <div className="button-container">
         {shareCode === undefined ? (
           <>
-            <Button
-              onClick={playBotButtonHandler}
-              value="Click to play with easy bot"
-            />
-            <Button
-              onClick={playLocalButtonHandler}
-              value="Click to play with local friend"
-            />
             <HostPeerConnection
               gameState={state}
               gameDispatch={dispatch}
               peerShareCode={shareCode}
               setPlayerNumber={setPlayerNumber}
+              onLoaded={() => setHostLoaded(true)}
             />
+            {hostLoaded && (
+              <>
+                <Button
+                  onClick={playBotButtonHandler}
+                  value="Click to play with easy bot"
+                />
+                <Button
+                  onClick={playLocalButtonHandler}
+                  value="Click to play with local friend"
+                />
+              </>
+            )}
           </>
         ) : (
           <>
