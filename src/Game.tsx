@@ -10,11 +10,7 @@ import Button from './components/Button.tsx';
 import Board from './Board.tsx';
 import HostPeerConnection from './networking/HostPeerConnection.tsx';
 import FriendPeerConnection from './networking/FriendPeerConnection.tsx';
-import {
-  GameType,
-  ClickDestinationAction,
-  ClickPenaltyDestinationAction,
-} from './types/all.ts';
+import { GameType } from './types/all.ts';
 import { makeBotMove } from './bot/makeBotMove.ts';
 
 function Game() {
@@ -104,7 +100,7 @@ function Game() {
           <>
             <Button
               onClick={playBotButtonHandler}
-              value="Click to play with your favorite bot"
+              value="Click to play with easy bot"
             />
             <Button
               onClick={playLocalButtonHandler}

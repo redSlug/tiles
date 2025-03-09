@@ -1,6 +1,5 @@
 import './Factories.css';
 
-import { usePeerJsStore } from './networking/PeerStore.ts';
 import Factory from './Factory.tsx';
 import { Action, GameState, GameType } from './types/all.ts';
 
@@ -15,8 +14,6 @@ function Factories({
   playerNumber: number;
   gameType: GameType;
 }) {
-  const zustandConnection = usePeerJsStore(state => state.zustandConnection);
-
   return (
     <div className="factories-container">
       {state.factories.map((factory, index: number) => (
