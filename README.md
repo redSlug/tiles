@@ -31,3 +31,4 @@ npm run deploy
 - add a browser icon
 - make it default to full screen on mobile / or turn it into a mobile app
 - player who picks up white tile should go first following round
+- make bot player number random (don't hard code it)
