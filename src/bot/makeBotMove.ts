@@ -3,6 +3,7 @@ import {
   ClickDestinationAction,
   ClickPenaltyDestinationAction,
   GameState,
+  FinalTile,
 } from '../types/all.ts';
 
 export async function makeBotMove(
@@ -32,16 +33,31 @@ export async function makeBotMove(
     .flat()
     .filter(source => source.tileCount > 0 && source.tileColor !== 'white');
 
+  function finalRowHasColorUnfilled(
+    color: string,
+    finalRow: Array<FinalTile>,
+  ): boolean {
+    return finalRow.some(tile => {
+      return tile.tileColor === color && !tile.isFilled;
+    });
+  }
+
+  const finalRows = state.players[1].finalRows;
   for (const source of candidateSourceActions) {
     let availableRows = state.players[1].rows
       .map((row, rowNumber) => ({
         rowNumber,
         row,
       }))
-      .filter(({ row }) => {
+      .filter(row => {
         return (
-          (row.tileColor === undefined || row.tileColor === source.tileColor) &&
-          row.openSpaceCount > 0
+          finalRowHasColorUnfilled(
+            source.tileColor,
+            finalRows[row.rowNumber],
+          ) &&
+          row.row.openSpaceCount > 0 &&
+          (row.row.tileColor === undefined ||
+            row.row.tileColor === source.tileColor)
         );
       });
     let availableDestinationActions: Array<ClickDestinationAction> =
@@ -69,6 +85,7 @@ export async function makeBotMove(
       } as ClickPenaltyDestinationAction,
     });
   }
+
   dispatch(candidateMoves[0].source);
 
   dispatch(candidateMoves[0].destination);
