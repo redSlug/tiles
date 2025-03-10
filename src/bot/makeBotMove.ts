@@ -14,36 +14,32 @@ export async function makeBotMove(
       | ClickPenaltyDestinationAction,
   ) => void,
 ): Promise<void> {
-  const availableFactories = state.factories
+  const candidateSourceActions = state.factories
     .map((factory, factoryIndex) => {
-      return factory.tiles.map((tile, tileIndex) => ({
-        factoryNumber: factoryIndex,
-        tileColor: tile.tileColor,
-        tileCount: tile.tileCount,
-        tilesIndex: tileIndex,
-      }));
+      return factory.tiles.map(
+        (tile, tileIndex) =>
+          ({
+            type: 'click_source',
+            factoryNumber: factoryIndex,
+            tileColor: tile.tileColor,
+            tileCount: tile.tileCount,
+            tilesIndex: tileIndex,
+          }) as ClickSourceAction,
+      );
     })
     .flat()
-    .filter(source => source.tileCount > 0);
+    .filter(source => source.tileCount > 0 && source.tileColor !== 'white');
 
-  await new Promise(resolve => setTimeout(resolve, 800));
+  const selectedSourceAction =
+    candidateSourceActions[
+      Math.floor(Math.random() * candidateSourceActions.length)
+    ];
 
-  const selectedSource =
-    availableFactories[Math.floor(Math.random() * availableFactories.length)];
+  dispatch(selectedSourceAction);
 
-  const clickSourceAction: ClickSourceAction = {
-    type: 'click_source',
-    factoryNumber: selectedSource.factoryNumber,
-    tileColor: selectedSource.tileColor,
-    tileCount: selectedSource.tileCount,
-    tilesIndex: selectedSource.tilesIndex,
-  };
+  await new Promise(resolve => setTimeout(resolve, 500));
 
-  dispatch(clickSourceAction);
-
-  await new Promise(resolve => setTimeout(resolve, 1200));
-
-  const selectedTileColor = selectedSource.tileColor;
+  const selectedTileColor = selectedSourceAction.tileColor;
 
   const availableRows = state.players[1].rows
     .map((row, index) => ({
