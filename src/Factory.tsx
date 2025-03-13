@@ -26,6 +26,7 @@ function Factory({
   );
 
   async function handleFactoryClick(index: number, group: FactoryColorGroup) {
+    console.log('handle factory click');
     setClickedColor(group.tileColor);
     gameDispatch({
       type: 'click_source',

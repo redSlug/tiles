@@ -68,16 +68,19 @@ function Rows({
   }
 
   function handleRowClick(index: number) {
+    console.log('handle row click start', state);
     if (isProcessing) {
       return;
     }
     setIsProcessing(true);
+    console.log('handle row click process');
     gameDispatch({
       type: 'click_destination',
       rowNumber: index,
       peerDataConnection: peerDataConnection,
       playerNumber,
       gameType,
+      currentTurnNumber: state.turnNumber,
     });
     setIsProcessing(false);
   }
@@ -110,6 +113,7 @@ function Rows({
         turnNumber={state.turnNumber}
         source={state.source}
         gameType={gameType}
+        currentTurnNumber={state.turnNumber}
       />
       {rows.map((row: Row, rowIndex: number) => (
         <div className={'row-container'} key={rowIndex}>

@@ -13,6 +13,7 @@ function PenaltyRow({
   turnNumber,
   source,
   gameType,
+  currentTurnNumber,
 }: {
   gameDispatch: (action: Action) => void;
   peerDataConnection: DataConnection | undefined;
@@ -21,6 +22,7 @@ function PenaltyRow({
   turnNumber: number;
   source: Source | undefined;
   gameType: GameType;
+  currentTurnNumber: number;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -62,6 +64,7 @@ function PenaltyRow({
       peerDataConnection: peerDataConnection,
       playerNumber,
       gameType,
+      currentTurnNumber,
     });
     setIsProcessing(false);
   }

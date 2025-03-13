@@ -241,8 +241,8 @@ function endPlayerTurn(
   factories: Array<Factory>,
   action: ClickDestinationAction | ClickPenaltyDestinationAction,
 ) {
-  const player0 = state.players[0];
-  const player1 = state.players[1];
+  const player0 = { ...state.players[0] };
+  const player1 = { ...state.players[1] };
   const isRoundOver = factories.every(c => c.tiles.length == 0);
 
   if (isRoundOver) {
@@ -346,6 +346,11 @@ export function clickDestination(
 ) {
   console.log('clickDestination state', state);
 
+  if (action.currentTurnNumber !== state.turnNumber) {
+    debugger;
+    return state;
+  }
+
   const { rowNumber, playerNumber } = action;
   const { tileColor, tileCount, factoryNumber } = state.source!;
   const factories = state.factories;
@@ -368,6 +373,8 @@ export function clickDestination(
     state.players[playerNumber].rows[rowNumber],
     tileCount,
   );
+
+  console.log('openSpaceCount', openSpaceCount, 'turn no', state.turnNumber);
 
   // Move source tile to destination row
   state.players[playerNumber].rows[rowNumber] = { tileColor, openSpaceCount };

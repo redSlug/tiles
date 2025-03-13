@@ -16,6 +16,7 @@ function clickRouterReducer(state: GameState, action: Action): GameState {
     case 'click_source':
       return clickSource(state, action);
     case 'click_destination':
+      console.log('click destination reducer called', state, action);
       return clickDestination(state, action);
     case 'click_penalty_destination':
       return clickPenaltyDestination(state, action);
@@ -34,7 +35,7 @@ function setPeerGameState(action: SetPeerGameStateAction) {
 }
 
 function clickSource(state: GameState, action: ClickSourceAction) {
-  console.log('in click source', state.source);
+  console.log('in click source', action);
   return {
     ...state,
     source: {

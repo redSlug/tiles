@@ -70,6 +70,7 @@ export type ClickDestinationAction = {
   peerDataConnection: DataConnection | undefined;
   playerNumber: number;
   gameType: GameType;
+  currentTurnNumber: number;
 };
 
 export type ClickPenaltyDestinationAction = {
@@ -77,6 +78,7 @@ export type ClickPenaltyDestinationAction = {
   peerDataConnection: DataConnection | undefined;
   playerNumber: number;
   gameType: GameType;
+  currentTurnNumber: number;
 };
 
 export type ClickRoundEndAction = {
