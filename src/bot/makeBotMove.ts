@@ -4,7 +4,79 @@ import {
   ClickPenaltyDestinationAction,
   GameState,
   FinalTile,
+  Player,
 } from '../types/all.ts';
+
+type CandidateMove = {
+  source: ClickSourceAction;
+  destination: ClickDestinationAction | ClickPenaltyDestinationAction;
+};
+
+function getCandidateScore(
+  state: GameState,
+  candidateMove: CandidateMove,
+  player: Player,
+  opponent: Player,
+): number {
+  let score = 0;
+  const { source, destination } = candidateMove;
+  if (destination.type === 'click_penalty_destination') {
+    score = -20;
+    const filledPenaltyTiles = player.penaltyRows.filter(
+      tile => tile.tileColor !== undefined,
+    ).length;
+    score -= filledPenaltyTiles * 5;
+
+    return score;
+  }
+  const rowNumber = (destination as ClickDestinationAction).rowNumber;
+  const destinationRow = player.rows[rowNumber];
+
+  const openSpaceCount = destinationRow.openSpaceCount;
+  const sourceTilesCount = Math.min(source.tileCount, openSpaceCount);
+  const leftoverSpaceCount = Math.max(0, openSpaceCount - sourceTilesCount);
+
+  if (leftoverSpaceCount === 0) {
+    score += 50;
+    score += rowNumber * 10;
+  } else {
+    const completionPercentage = 1 - leftoverSpaceCount / (rowNumber + 1);
+    score += completionPercentage * 40;
+  }
+
+  score += sourceTilesCount * 20;
+
+  if (rowNumber === 2) {
+    score += 10;
+  } else if (rowNumber === 1 || rowNumber === 3) {
+    score += 5;
+  }
+
+  const opponentColorRows = opponent.rows.filter(
+    row => row.tileColor === source.tileColor && row.openSpaceCount > 0,
+  );
+
+  if (opponentColorRows.length > 0) {
+    score += source.tileCount * 5;
+  }
+
+  const isLateGame = state.factories.flatMap(f => f.tiles).length < 8;
+
+  if (isLateGame && leftoverSpaceCount === 0) {
+    score += 15;
+  }
+
+  return score;
+}
+
+function finalRowHasColorUnfilled(
+  color: string,
+  finalRow: Array<FinalTile>,
+): boolean {
+  return finalRow.some(tile => {
+    return tile.tileColor === color && !tile.isFilled;
+  });
+}
 
 export async function makeBotMove(
   state: GameState,
@@ -33,18 +105,9 @@ export async function makeBotMove(
     .flat()
     .filter(source => source.tileCount > 0 && source.tileColor !== 'white');
 
-  function finalRowHasColorUnfilled(
-    color: string,
-    finalRow: Array<FinalTile>,
-  ): boolean {
-    return finalRow.some(tile => {
-      return tile.tileColor === color && !tile.isFilled;
-    });
-  }
-
   const finalRows = state.players[1].finalRows;
   for (const source of candidateSourceActions) {
-    let availableRows = state.players[1].rows
+    const availableRows = state.players[1].rows
       .map((row, rowNumber) => ({
         rowNumber,
         row,
@@ -60,7 +123,7 @@ export async function makeBotMove(
             row.row.tileColor === source.tileColor)
         );
       });
-    let availableDestinationActions: Array<ClickDestinationAction> =
+    const availableDestinationActions: Array<ClickDestinationAction> =
       availableRows.map(
         item =>
           ({
@@ -86,9 +149,27 @@ export async function makeBotMove(
     });
   }
 
-  dispatch(candidateMoves[0].source);
+  candidateMoves.sort((moveA, moveB) => {
+    const scoreA = getCandidateScore(
+      state,
+      moveA,
+      state.players[1],
+      state.players[0],
+    );
+    const scoreB = getCandidateScore(
+      state,
+      moveB,
+      state.players[1],
+      state.players[0],
+    );
+    return scoreB - scoreA;
+  });
 
-  dispatch(candidateMoves[0].destination);
+  const { source, destination } = candidateMoves[0];
 
+  dispatch(source);
+  setTimeout(() => {
+    dispatch(destination);
+  }, 500);
   await new Promise(resolve => setTimeout(resolve, 500));
 }

@@ -109,7 +109,7 @@ function Game() {
               <>
                 <Button
                   onClick={playBotButtonHandler}
-                  value="Click to play with easy bot"
+                  value="Click to play with bot"
                 />
                 <Button
                   onClick={playLocalButtonHandler}
