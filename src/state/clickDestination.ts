@@ -225,14 +225,47 @@ function isGameOver(finalTiles: Array<Array<Array<FinalTile>>>): boolean {
 }
 
 function calculateEndGameBonus(finalRows: Array<Array<FinalTile>>) {
-  // TODO: calculate other end game bonuses for column and all color full
   let bonus = 0;
+
   for (const playerFinalRow of finalRows) {
     const emptyTiles = playerFinalRow.filter(tile => !tile.isFilled);
     if (emptyTiles.length === 0) {
       bonus += 2;
+      console.log('row complete: +2 points');
     }
   }
+
+  for (let col = 0; col < finalRows[0].length; col++) {
+    let isColumnComplete = true;
+    for (let row = 0; row < finalRows.length; row++) {
+      if (!finalRows[row][col].isFilled) {
+        isColumnComplete = false;
+        break;
+      }
+    }
+    if (isColumnComplete) {
+      bonus += 7;
+      console.log('column complete: +7 points');
+    }
+  }
+
+  const colorCounts = new Map<string, number>();
+  for (let row = 0; row < finalRows.length; row++) {
+    for (let col = 0; col < finalRows[row].length; col++) {
+      const tile = finalRows[row][col];
+      if (tile.isFilled) {
+        const color = tile.tileColor;
+        colorCounts.set(color, (colorCounts.get(color) || 0) + 1);
+      }
+    }
+  }
+  for (const [color, count] of colorCounts.entries()) {
+    if (count === finalRows.length) {
+      bonus += 10;
+      console.log(`color ${color} tiles: +10 points`);
+    }
+  }
+
   return bonus;
 }
 
