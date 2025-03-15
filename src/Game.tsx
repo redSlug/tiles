@@ -34,18 +34,33 @@ function Game() {
   }
 
   useEffect(() => {
+    console.log('bot move effect triggered with', {
+      gameType,
+      playerTurn: state.playerTurn,
+      isGameOver: state.isGameOver,
+      botThinking,
+      turnNumber: state.turnNumber
+    });
+    
     if (
       gameType === 'bot' &&
-      state.turnNumber % 2 === 1 &&
+      state.playerTurn === 1 &&
       !state.isGameOver &&
       !botThinking
     ) {
+      console.log('bot thinking set to true, about to call makeBotMove');
       setBotThinking(true);
-      makeBotMove(state, dispatch).then(() => {
-        setBotThinking(false);
-      });
+      makeBotMove(state, dispatch)
+        .then(() => {
+          console.log('makeBotMove completed successfully');
+          setBotThinking(false);
+        })
+        .catch(error => {
+          console.log('error in makeBotMove:', error);
+          setBotThinking(false);
+        });
     }
-  }, [state.turnNumber]);
+  }, [state.playerTurn, state.turnNumber, botThinking, gameType]);
 
   function getTitleString(): string {
     if (state.isGameOver) {
@@ -66,16 +81,16 @@ function Game() {
     }
 
     if (gameType === 'bot') {
-      return state.turnNumber % 2 === 0 ? 'your turn' : 'bot is thinking...';
+      return state.playerTurn === 0 ? 'your turn' : 'bot is thinking...';
     }
 
     if (zustandConnection === undefined) {
       return 'not connected';
     }
 
-    return playerNumber === state.turnNumber % 2
-      ? 'waiting for friend'
-      : 'your turn';
+    return playerNumber === state.playerTurn
+      ? 'your turn'
+      : 'waiting for friend';
   }
 
   const titleString = getTitleString();

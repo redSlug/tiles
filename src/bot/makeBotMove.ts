@@ -87,6 +87,12 @@ export async function makeBotMove(
       | ClickPenaltyDestinationAction,
   ) => void,
 ): Promise<void> {
+  console.log('makeBotMove called with state:', {
+    factories: state.factories.length,
+    playerTurn: state.playerTurn,
+    turnNumber: state.turnNumber,
+  });
+
   const candidateMoves = [];
 
   const candidateSourceActions = state.factories
@@ -104,6 +110,8 @@ export async function makeBotMove(
     })
     .flat()
     .filter(source => source.tileCount > 0 && source.tileColor !== 'white');
+
+  console.log('candidate source actions:', candidateSourceActions.length);
 
   const finalRows = state.players[1].finalRows;
   for (const source of candidateSourceActions) {
@@ -172,4 +180,5 @@ export async function makeBotMove(
     dispatch(destination);
   }, 500);
   await new Promise(resolve => setTimeout(resolve, 500));
+  console.log('makeBotMove complete');
 }

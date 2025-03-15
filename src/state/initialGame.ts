@@ -130,5 +130,6 @@ export function getInitialState(): GameState {
     source: undefined,
     bagOfTiles,
     turnNumber: 0,
+    playerTurn: Math.floor(Math.random() * 2),
   };
 }

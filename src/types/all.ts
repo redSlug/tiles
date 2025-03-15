@@ -45,6 +45,7 @@ export type GameState = {
   bagOfTiles: Array<string>;
   peerId?: string;
   turnNumber: number;
+  playerTurn: number;
   isGameOver: boolean;
 };
 

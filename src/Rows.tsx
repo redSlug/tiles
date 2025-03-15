@@ -58,13 +58,7 @@ function Rows({
     ) {
       return true;
     }
-
-    switch (gameType) {
-      case 'bot':
-        return playerNumber !== 0 || state.turnNumber % 2 !== 0;
-      default:
-        return playerNumber === state.turnNumber % 2;
-    }
+    return playerNumber !== state.playerTurn;
   }
 
   function handleRowClick(index: number) {
@@ -107,9 +101,9 @@ function Rows({
         peerDataConnection={peerDataConnection}
         tiles={overflowTiles}
         playerNumber={playerNumber}
-        turnNumber={state.turnNumber}
         source={state.source}
         gameType={gameType}
+        playerTurn={state.playerTurn}
       />
       {rows.map((row: Row, rowIndex: number) => (
         <div className={'row-container'} key={rowIndex}>

@@ -278,6 +278,8 @@ function endPlayerTurn(
   const player1 = state.players[1];
   const isRoundOver = factories.every(c => c.tiles.length == 0);
 
+  const nextPlayerTurn = state.playerTurn === 0 ? 1 : 0;
+
   if (isRoundOver) {
     player0.score += calculatePlayerScoreWhilePlacingFinalTiles(
       player0.rows,
@@ -316,6 +318,7 @@ function endPlayerTurn(
     factories,
     source: undefined,
     turnNumber: state.turnNumber + 1,
+    playerTurn: nextPlayerTurn,
     players: [{ ...player0 }, { ...player1 }],
   };
   if (action.gameType === 'remote') {
@@ -352,12 +355,10 @@ export function clickPenaltyDestination(
       console.log('yoo this should never happen');
       continue;
     }
-    // fill penalty row
     penaltyRow[i].tileColor = tileColor;
   }
 
   if (isOverflowFactory) {
-    // Remove chosen color tiles from overflow
     factories[OVERFLOW_FACTORY_NUMBER].tiles = factories[
       OVERFLOW_FACTORY_NUMBER
     ].tiles.filter(tile => tile.tileColor !== tileColor);

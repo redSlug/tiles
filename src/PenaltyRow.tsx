@@ -10,22 +10,22 @@ function PenaltyRow({
   peerDataConnection,
   tiles,
   playerNumber,
-  turnNumber,
   source,
   gameType,
+  playerTurn,
 }: {
   gameDispatch: (action: Action) => void;
   peerDataConnection: DataConnection | undefined;
   tiles: Array<PenaltyTile>;
   playerNumber: number;
-  turnNumber: number;
   source: Source | undefined;
   gameType: GameType;
+  playerTurn: number;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
 
   function getClassName(tile: PenaltyTile) {
-    if (rowIsDisabled(source, playerNumber, turnNumber)) {
+    if (rowIsDisabled(source, playerNumber, playerTurn)) {
       return tile.tileColor === undefined
         ? `empty-tile`
         : `${tile.tileColor}-tiles`;
@@ -37,18 +37,21 @@ function PenaltyRow({
   function rowIsDisabled(
     source: Source | undefined,
     playerNumber: number,
-    turnNumber: number,
+    playerTurn: number,
   ): boolean {
     if (source === undefined) {
       return true;
     }
-
-    switch (gameType) {
-      case 'bot':
-        return playerNumber !== 0 || turnNumber % 2 !== 0;
-      default:
-        return playerNumber === turnNumber % 2;
+    
+    if (gameType === 'bot') {
+      const isDisabled = playerNumber !== 0 || playerTurn !== 0;
+      console.log(`penaltyRow rowIsDisabled bot check: playerNumber=${playerNumber}, playerTurn=${playerTurn}, isDisabled=${isDisabled}`);
+      return isDisabled;
     }
+    
+    const isDisabled = playerNumber !== playerTurn;
+    console.log(`penaltyRow rowIsDisabled remote check: playerNumber=${playerNumber}, playerTurn=${playerTurn}, isDisabled=${isDisabled}`);
+    return isDisabled;
   }
 
   async function handleRowClick() {
@@ -71,7 +74,7 @@ function PenaltyRow({
       {tiles.map((tile, colIndex: number) => (
         <Tile
           key={`penalty-${colIndex}`}
-          isDisabled={rowIsDisabled(source, playerNumber, turnNumber)}
+          isDisabled={rowIsDisabled(source, playerNumber, playerTurn)}
           className={getClassName(tile)}
           onClick={handleRowClick}
           value={'-' + tile.penaltyAmount.toString()}

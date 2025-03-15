@@ -23,7 +23,7 @@ function Factories({
             factoryColorGroups={factory.tiles}
             gameDispatch={gameDispatch}
             playerNumber={playerNumber}
-            turnNumber={state.turnNumber}
+            playerTurn={state.playerTurn}
             sourceFactoryNumber={state.source?.factoryNumber}
             gameType={gameType}
           />

@@ -9,17 +9,17 @@ function Factory({
   factoryColorGroups,
   gameDispatch,
   playerNumber,
-  turnNumber,
   sourceFactoryNumber,
   gameType,
+  playerTurn,
 }: {
   factoryNumber: number;
   factoryColorGroups: Array<FactoryColorGroup>;
   gameDispatch: (action: Action) => void;
   playerNumber: number;
-  turnNumber: number;
   sourceFactoryNumber: number | undefined;
   gameType: GameType;
+  playerTurn: number;
 }) {
   const [clickedColor, setClickedColor] = useState<string | undefined>(
     undefined,
@@ -42,10 +42,14 @@ function Factory({
     }
 
     if (gameType === 'bot') {
-      return turnNumber % 2 !== 0;
+      const isDisabled = playerTurn !== 0;
+      console.log(`factory tileIsDisabled bot check: playerTurn=${playerTurn}, isDisabled=${isDisabled}`);
+      return isDisabled;
     }
 
-    return playerNumber === turnNumber % 2;
+    const isDisabled = playerNumber !== playerTurn;
+    console.log(`factory tileIsDisabled remote check: playerNumber=${playerNumber}, playerTurn=${playerTurn}, isDisabled=${isDisabled}`);
+    return isDisabled;
   }
 
   function getClassName(group: FactoryColorGroup): string {
