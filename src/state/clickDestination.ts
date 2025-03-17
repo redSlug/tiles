@@ -27,10 +27,15 @@ function clearFullRows(rows: Array<Row>) {
 }
 
 function manageWhiteTile(
+  tileColor: string,
   sourceTiles: Array<FactoryColorGroup>,
   penaltyRow: Array<PenaltyTile>,
   isOverflowFactory: boolean,
 ) {
+  if (tileColor === 'white') {
+    return;
+  }
+
   const whiteTileIndex = sourceTiles.findIndex(
     tile => tile.tileColor === 'white',
   );
@@ -269,6 +274,10 @@ function calculateEndGameBonus(finalRows: Array<Array<FinalTile>>) {
   return bonus;
 }
 
+function hasWhiteTile(penaltyRow: Array<PenaltyTile>): boolean {
+  return penaltyRow.findIndex(tile => tile.tileColor === 'white') !== -1;
+}
+
 function endPlayerTurn(
   state: GameState,
   factories: Array<Factory>,
@@ -278,9 +287,11 @@ function endPlayerTurn(
   const player1 = state.players[1];
   const isRoundOver = factories.every(c => c.tiles.length == 0);
 
-  const nextPlayerTurn = state.playerTurn === 0 ? 1 : 0;
+  let nextPlayerTurn = state.playerTurn === 0 ? 1 : 0;
 
   if (isRoundOver) {
+    nextPlayerTurn = hasWhiteTile(state.players[0].penaltyRows) ? 0 : 1;
+
     player0.score += calculatePlayerScoreWhilePlacingFinalTiles(
       player0.rows,
       player0.penaltyRows,
@@ -340,7 +351,7 @@ export function clickPenaltyDestination(
   const penaltyRow = state.players[playerNumber].penaltyRows;
   const isOverflowFactory = factoryNumber === OVERFLOW_FACTORY_NUMBER;
 
-  manageWhiteTile(sourceTiles, penaltyRow, isOverflowFactory);
+  manageWhiteTile(tileColor, sourceTiles, penaltyRow, isOverflowFactory);
 
   const firstEmptyPenaltyIndex = penaltyRow.findIndex(
     tile => tile.tileColor === undefined,
@@ -386,6 +397,7 @@ export function clickDestination(
   const sourceTiles = factories[factoryNumber].tiles;
 
   manageWhiteTile(
+    tileColor,
     sourceTiles,
     state.players[playerNumber].penaltyRows,
     factoryNumber === OVERFLOW_FACTORY_NUMBER,
