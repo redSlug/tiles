@@ -8,7 +8,11 @@ import {
   PenaltyTile,
   Row,
 } from '../types/all';
-import { OVERFLOW_FACTORY_NUMBER } from '../constants/all';
+import {
+  INITIAL_FACTORY_GROUP_COUNT,
+  OVERFLOW_FACTORY_NUMBER,
+  TILES_PER_FACTORY_GROUP,
+} from '../constants/all';
 import {
   getNewBagOfTiles,
   getEmptyPenaltyRows,
@@ -288,6 +292,7 @@ function endPlayerTurn(
   const isRoundOver = factories.every(c => c.tiles.length == 0);
 
   let nextPlayerTurn = state.playerTurn === 0 ? 1 : 0;
+  const finalPlayerRows = [player0.finalRows, player1.finalRows];
 
   if (isRoundOver) {
     nextPlayerTurn = hasWhiteTile(state.players[0].penaltyRows) ? 0 : 1;
@@ -313,11 +318,17 @@ function endPlayerTurn(
     player0.penaltyRows = getEmptyPenaltyRows();
     player1.penaltyRows = getEmptyPenaltyRows();
 
-    factories = getInitialFactories(state.bagOfTiles.slice(0, 20));
+    if (!isGameOver(finalPlayerRows)) {
+      factories = getInitialFactories(
+        state.bagOfTiles.slice(
+          0,
+          INITIAL_FACTORY_GROUP_COUNT * TILES_PER_FACTORY_GROUP,
+        ),
+      );
+    }
     state.bagOfTiles = state.bagOfTiles.slice(20, state.bagOfTiles.length);
   }
 
-  const finalPlayerRows = [player0.finalRows, player1.finalRows];
   if (isGameOver(finalPlayerRows)) {
     player0.score += calculateEndGameBonus(player0.finalRows);
     player1.score += calculateEndGameBonus(player1.finalRows);
