@@ -12,12 +12,17 @@ import HostPeerConnection from './networking/HostPeerConnection.tsx';
 import FriendPeerConnection from './networking/FriendPeerConnection.tsx';
 import { GameType } from './types/all.ts';
 import { makeBotMove } from './bot/makeBotMove.ts';
+import {
+  BOT_PLAYER_NUMBER,
+  HUMAN_PLAYER_NUMBER,
+  PEER_PLAYER_NUMBER,
+} from './constants/all.ts';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
   const { shareCode } = useParams();
   const zustandConnection = usePeerJsStore(state => state.zustandConnection);
-  const [playerNumber, setPlayerNumber] = useState<number>(1);
+  const [playerNumber, setPlayerNumber] = useState<number>(PEER_PLAYER_NUMBER);
   const [gameType, setGameType] = useState<GameType>('remote');
   const [botThinking, setBotThinking] = useState<boolean>(false);
   const [hostLoaded, setHostLoaded] = useState<boolean>(false);
@@ -30,21 +35,13 @@ function Game() {
   function playBotButtonHandler() {
     console.log('playBotButtonHandler');
     setGameType('bot');
-    setPlayerNumber(0);
+    setPlayerNumber(HUMAN_PLAYER_NUMBER);
   }
 
   useEffect(() => {
-    console.log('bot move effect triggered with', {
-      gameType,
-      playerTurn: state.playerTurn,
-      isGameOver: state.isGameOver,
-      botThinking,
-      turnNumber: state.turnNumber
-    });
-    
     if (
       gameType === 'bot' &&
-      state.playerTurn === 1 &&
+      state.playerTurn === BOT_PLAYER_NUMBER &&
       !state.isGameOver &&
       !botThinking
     ) {
@@ -77,11 +74,15 @@ function Game() {
     }
 
     if (gameType === 'local') {
-      return 'local game';
+      return state.playerTurn === 1
+        ? 'local game - player 1 turn'
+        : 'local game - player 2 turn';
     }
 
     if (gameType === 'bot') {
-      return state.playerTurn === 0 ? 'your turn' : 'bot is thinking...';
+      return state.playerTurn === HUMAN_PLAYER_NUMBER
+        ? 'your turn'
+        : 'bot is thinking...';
     }
 
     if (zustandConnection === undefined) {

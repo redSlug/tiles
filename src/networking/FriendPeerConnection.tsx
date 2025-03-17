@@ -40,16 +40,15 @@ function FriendPeerConnection({
 
     peer?.on('disconnected', function () {
       console.log('==> friend connection lost, reconnecting');
-      peer.reconnect();
     });
     peer?.on('close', function () {
-      setIsConnected(false); // this doesn't do much
       console.log('==> friend connection closed');
-      alert('peer closed');
     });
     peer?.on('error', function (err) {
       console.log('==> friend error', err);
-      alert('peer error' + err);
+      alert(
+        'Your friend disconnected. Ask them to send a new link and open it in a new browser tab',
+      );
     });
   }, [peer]);
 

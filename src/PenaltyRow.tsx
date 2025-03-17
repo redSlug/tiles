@@ -42,16 +42,8 @@ function PenaltyRow({
     if (source === undefined) {
       return true;
     }
-    
-    if (gameType === 'bot') {
-      const isDisabled = playerNumber !== 0 || playerTurn !== 0;
-      console.log(`penaltyRow rowIsDisabled bot check: playerNumber=${playerNumber}, playerTurn=${playerTurn}, isDisabled=${isDisabled}`);
-      return isDisabled;
-    }
-    
-    const isDisabled = playerNumber !== playerTurn;
-    console.log(`penaltyRow rowIsDisabled remote check: playerNumber=${playerNumber}, playerTurn=${playerTurn}, isDisabled=${isDisabled}`);
-    return isDisabled;
+
+    return playerNumber !== playerTurn;
   }
 
   async function handleRowClick() {

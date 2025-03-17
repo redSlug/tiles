@@ -42,13 +42,18 @@ function Factory({
     }
 
     if (gameType === 'bot') {
+      // TODO remove hard coding
       const isDisabled = playerTurn !== 0;
-      console.log(`factory tileIsDisabled bot check: playerTurn=${playerTurn}, isDisabled=${isDisabled}`);
+      console.log(
+        `factory tileIsDisabled bot check: playerTurn=${playerTurn}, isDisabled=${isDisabled}`,
+      );
       return isDisabled;
     }
 
     const isDisabled = playerNumber !== playerTurn;
-    console.log(`factory tileIsDisabled remote check: playerNumber=${playerNumber}, playerTurn=${playerTurn}, isDisabled=${isDisabled}`);
+    console.log(
+      `factory tileIsDisabled remote check: playerNumber=${playerNumber}, playerTurn=${playerTurn}, isDisabled=${isDisabled}`,
+    );
     return isDisabled;
   }
 

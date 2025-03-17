@@ -44,12 +44,12 @@ function Board({
     }
   });
 
-  let player1Name = 'player 1';
-  let player2Name = 'player 2';
+  let player1Name = 'your';
+  let player2Name = 'friend';
 
   if (gameType === 'local') {
-    player1Name = 'your';
-    player2Name = 'friend';
+    player1Name = 'player 1';
+    player2Name = 'player 2';
   } else if (gameType === 'bot') {
     player1Name = 'your';
     player2Name = 'bot';

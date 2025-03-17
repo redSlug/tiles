@@ -5,6 +5,7 @@ import './PeerConnection.css';
 import { usePeerJsStore } from './PeerStore.ts';
 import Button from '../components/Button.tsx';
 import { getParsedGameState, peerConfig } from './Shared.ts';
+import { HOST_PLAYER_NUMBER } from '../constants/all.ts';
 
 const baseUrl = import.meta.env.VITE_BASE_URL || 'garbage';
 
@@ -41,7 +42,7 @@ function HostPeerConnection({
         setShouldSendMessage(!shouldSendMessage);
         conn.send(JSON.stringify(gameState));
         setIsConnected(true);
-        setPlayerNumber(0);
+        setPlayerNumber(HOST_PLAYER_NUMBER);
       } else {
         console.log('==> host no connection found', conn);
       }
@@ -80,8 +81,7 @@ function HostPeerConnection({
       alert('peer closed');
     });
     peer?.on('error', function (err) {
-      console.log('error', err);
-      alert('peer error' + err);
+      console.log('error will connect automatically when back on line', err);
     });
   }, [peer, sendInitialGameToPeer]);
 

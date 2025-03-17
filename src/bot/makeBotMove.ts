@@ -6,6 +6,7 @@ import {
   FinalTile,
   Player,
 } from '../types/all.ts';
+import { BOT_PLAYER_NUMBER } from '../constants/all.ts';
 
 type CandidateMove = {
   source: ClickSourceAction;
@@ -138,7 +139,7 @@ export async function makeBotMove(
             type: 'click_destination',
             rowNumber: item.rowNumber,
             peerDataConnection: undefined,
-            playerNumber: 1,
+            playerNumber: BOT_PLAYER_NUMBER,
             gameType: 'bot',
           }) as ClickDestinationAction,
       );
@@ -151,7 +152,7 @@ export async function makeBotMove(
       destination: {
         type: 'click_penalty_destination',
         peerDataConnection: undefined,
-        playerNumber: 1,
+        playerNumber: BOT_PLAYER_NUMBER,
         gameType: 'bot',
       } as ClickPenaltyDestinationAction,
     });
