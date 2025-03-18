@@ -17,6 +17,9 @@ import {
   HUMAN_PLAYER_NUMBER,
   PEER_PLAYER_NUMBER,
 } from './constants/all.ts';
+import { useWindowSize } from 'react-use';
+import Confetti from 'react-confetti';
+import { getSpecificColorPalette } from './utilities/all.ts';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
@@ -26,6 +29,7 @@ function Game() {
   const [gameType, setGameType] = useState<GameType>('remote');
   const [botThinking, setBotThinking] = useState<boolean>(false);
   const [hostLoaded, setHostLoaded] = useState<boolean>(false);
+  const { width, height } = useWindowSize();
 
   function playLocalButtonHandler() {
     console.log('playLocalButtonHandler');
@@ -59,19 +63,37 @@ function Game() {
     }
   }, [state.playerTurn, state.turnNumber, botThinking, gameType]);
 
-  function getTitleString(): string {
-    if (state.isGameOver) {
-      if (state.players[0].score === state.players[1].score) {
-        return 'game over - tie game';
-      }
-      if (
-        state.players[playerNumber].score >
+  function currentPlayerHasWon(): boolean {
+    return (
+      state.isGameOver &&
+      state.players[playerNumber].score >
         state.players[playerNumber === 0 ? 1 : 0].score
-      ) {
-        return 'game over - you win!';
-      }
-      return 'game over - you lose!';
-    }
+    );
+  }
+
+  function otherPlayerHasWon(): boolean {
+    return (
+      state.isGameOver &&
+      state.players[playerNumber === 0 ? 1 : 0].score >
+        state.players[playerNumber].score
+    );
+  }
+
+  function localPlayerHasWon(): boolean {
+    return state.isGameOver && gameType === 'local' && !isTieGame();
+  }
+
+  function isTieGame(): boolean {
+    return (
+      state.isGameOver && state.players[0].score === state.players[1].score
+    );
+  }
+
+  function getTitleString(): string {
+    if (isTieGame()) return 'game over - tie game';
+    if (localPlayerHasWon()) return 'game over';
+    if (currentPlayerHasWon()) return 'game over - you win!';
+    if (otherPlayerHasWon()) return 'game over - you lose!';
 
     if (gameType === 'local') {
       return state.playerTurn === 1
@@ -96,20 +118,7 @@ function Game() {
 
   const titleString = getTitleString();
 
-  if (gameType === 'local' || gameType === 'bot') {
-    return (
-      <Board
-        state={state}
-        dispatch={dispatch}
-        titleString={titleString}
-        gameType={gameType}
-        playerNumber={playerNumber}
-        shareCode={shareCode!}
-      />
-    );
-  }
-
-  if (zustandConnection === undefined) {
+  if (gameType === 'remote' && zustandConnection === undefined) {
     return (
       <div className="button-container">
         {shareCode === undefined ? (
@@ -147,7 +156,7 @@ function Game() {
     );
   }
 
-  return (
+  const board = (
     <Board
       state={state}
       dispatch={dispatch}
@@ -157,6 +166,24 @@ function Game() {
       shareCode={shareCode!}
     />
   );
+
+  if (currentPlayerHasWon() || localPlayerHasWon()) {
+    return (
+      <>
+        <Confetti
+          width={width}
+          height={height}
+          numberOfPieces={Math.floor(Math.random() * 200 + 50)}
+          wind={0.002}
+          gravity={0.3}
+          colors={getSpecificColorPalette(8)}
+        />
+        {board}
+      </>
+    );
+  }
+
+  return board;
 }
 
 export default Game;
