@@ -19,7 +19,7 @@ import {
 } from './constants/all.ts';
 import { useWindowSize } from 'react-use';
 import Confetti from 'react-confetti';
-import { getSpecificColorPalette } from './utilities/all.ts';
+import { getRandomColorPalette } from './utilities/all.ts';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
@@ -176,7 +176,7 @@ function Game() {
           numberOfPieces={Math.floor(Math.random() * 200 + 50)}
           wind={0.002}
           gravity={0.3}
-          colors={getSpecificColorPalette(8)}
+          colors={getRandomColorPalette()}
         />
         {board}
       </>
