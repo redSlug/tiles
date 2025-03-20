@@ -72,3 +72,11 @@
 .clickable-row {
   opacity: 100%;
 }
+
+.green-tiles:hover,
+.blue-tiles:hover,
+.red-tiles:hover,
+.orange-tiles:hover,
+.purple-tiles:hover{
+  opacity: 80%;
+}
