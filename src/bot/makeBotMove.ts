@@ -13,7 +13,7 @@ type CandidateMove = {
   destination: ClickDestinationAction | ClickPenaltyDestinationAction;
 };
 
-function getCandidateScore(
+function getEvaluationScore(
   state: GameState,
   candidateMove: CandidateMove,
   player: Player,
@@ -27,16 +27,13 @@ function getCandidateScore(
       tile => tile.tileColor !== undefined,
     ).length;
     score -= filledPenaltyTiles * 5;
-
     return score;
   }
   const rowNumber = (destination as ClickDestinationAction).rowNumber;
   const destinationRow = player.rows[rowNumber];
-
   const openSpaceCount = destinationRow.openSpaceCount;
   const sourceTilesCount = Math.min(source.tileCount, openSpaceCount);
   const leftoverSpaceCount = Math.max(0, openSpaceCount - sourceTilesCount);
-
   if (leftoverSpaceCount === 0) {
     score += 50;
     score += rowNumber * 10;
@@ -44,29 +41,22 @@ function getCandidateScore(
     const completionPercentage = 1 - leftoverSpaceCount / (rowNumber + 1);
     score += completionPercentage * 40;
   }
-
   score += sourceTilesCount * 20;
-
   if (rowNumber === 2) {
     score += 10;
   } else if (rowNumber === 1 || rowNumber === 3) {
     score += 5;
   }
-
   const opponentColorRows = opponent.rows.filter(
     row => row.tileColor === source.tileColor && row.openSpaceCount > 0,
   );
-
   if (opponentColorRows.length > 0) {
     score += source.tileCount * 5;
   }
-
-  const isLateGame = state.factories.flatMap(f => f.tiles).length < 8;
-
-  if (isLateGame && leftoverSpaceCount === 0) {
+  const isLateRound = state.factories.flatMap(f => f.tiles).length < 8;
+  if (isLateRound && leftoverSpaceCount === 0) {
     score += 15;
   }
-
   return score;
 }
 
@@ -79,23 +69,8 @@ function finalRowHasColorUnfilled(
   });
 }
 
-export async function makeBotMove(
-  state: GameState,
-  dispatch: (
-    action:
-      | ClickSourceAction
-      | ClickDestinationAction
-      | ClickPenaltyDestinationAction,
-  ) => void,
-): Promise<void> {
-  console.log('makeBotMove called with state:', {
-    factories: state.factories.length,
-    playerTurn: state.playerTurn,
-    turnNumber: state.turnNumber,
-  });
-
+function getCandidateMoves(state: GameState): Array<CandidateMove> {
   const candidateMoves = [];
-
   const candidateSourceActions = state.factories
     .map((factory, factoryIndex) => {
       return factory.tiles.map(
@@ -111,9 +86,6 @@ export async function makeBotMove(
     })
     .flat()
     .filter(source => source.tileCount > 0 && source.tileColor !== 'white');
-
-  console.log('candidate source actions:', candidateSourceActions.length);
-
   const finalRows = state.players[1].finalRows;
   for (const source of candidateSourceActions) {
     const availableRows = state.players[1].rows
@@ -143,7 +115,6 @@ export async function makeBotMove(
             gameType: 'bot',
           }) as ClickDestinationAction,
       );
-
     for (const destination of availableDestinationActions) {
       candidateMoves.push({ source, destination });
     }
@@ -157,15 +128,28 @@ export async function makeBotMove(
       } as ClickPenaltyDestinationAction,
     });
   }
+  return candidateMoves;
+}
+
+export async function makeBotMove(
+  state: GameState,
+  dispatch: (
+    action:
+      | ClickSourceAction
+      | ClickDestinationAction
+      | ClickPenaltyDestinationAction,
+  ) => void,
+): Promise<void> {
+  const candidateMoves = getCandidateMoves(state);
 
   candidateMoves.sort((moveA, moveB) => {
-    const scoreA = getCandidateScore(
+    const scoreA = getEvaluationScore(
       state,
       moveA,
       state.players[1],
       state.players[0],
     );
-    const scoreB = getCandidateScore(
+    const scoreB = getEvaluationScore(
       state,
       moveB,
       state.players[1],
