@@ -7,6 +7,8 @@ import {
 } from '../types/all.ts';
 import { BOT_PLAYER_NUMBER } from '../constants/all.ts';
 import { getOtherPlayer } from '../utilities/all.ts';
+import { searchMovesRouterReducer } from '../state/useGameState.ts';
+import { sortBy } from 'sort-by-typescript';
 
 type CandidateMove = {
   initialGameState: GameState;
@@ -21,31 +23,31 @@ type ScoredCandidateMove = {
   nextGameState: GameState | undefined;
 };
 
-// function getNewGameState(candidateMove: CandidateMove): GameState {
-//   const stateAfterSourceMove = {
-//     ...searchMovesRouterReducer(
-//       candidateMove.initialGameState,
-//       candidateMove.source,
-//     ),
-//   };
-//
-//   return searchMovesRouterReducer(
-//     stateAfterSourceMove,
-//     candidateMove.destination,
-//   );
-// }
-//
-// function getPotentialMoveScoreDelta(
-//   candidateMove: CandidateMove,
-//   playerNumber: number,
-// ): number {
-//   const initialState = candidateMove.initialGameState;
-//   const newState = getNewGameState(candidateMove);
-//   return (
-//     newState.players[playerNumber].score -
-//     initialState.players[playerNumber].score
-//   );
-// }
+function getNewGameState(candidateMove: CandidateMove): GameState {
+  const stateAfterSourceMove = {
+    ...searchMovesRouterReducer(
+      candidateMove.initialGameState,
+      candidateMove.source,
+    ),
+  };
+
+  return searchMovesRouterReducer(
+    stateAfterSourceMove,
+    candidateMove.destination,
+  );
+}
+
+function getScoreDelta(
+  candidateMove: CandidateMove,
+  playerNumber: number,
+): number {
+  const initialState = candidateMove.initialGameState;
+  const newState = getNewGameState(candidateMove);
+  return (
+    newState.players[playerNumber].score -
+    initialState.players[playerNumber].score
+  );
+}
 
 function getEvaluationScore(
   candidateMove: CandidateMove,
@@ -183,6 +185,38 @@ function getScoredCandidateMoves(
         nextGameState: undefined,
       }) as ScoredCandidateMove,
   );
+}
+
+export function sortBotMoves(moves: Array<ScoredCandidateMove>) {
+  moves.sort(sortBy('-scoreDelta', '-evalScore'));
+}
+
+export async function makeBetterBotMove(
+  state: GameState,
+  dispatch: (
+    action:
+      | ClickSourceAction
+      | ClickDestinationAction
+      | ClickPenaltyDestinationAction,
+  ) => void,
+): Promise<void> {
+  const stateCopy = { ...state };
+  const candidateMoves = getScoredCandidateMoves(stateCopy, BOT_PLAYER_NUMBER);
+
+  for (const candidateMove of candidateMoves) {
+    candidateMove.nextGameState = getNewGameState(candidateMove.candidateMove);
+    candidateMove.scoreDelta = getScoreDelta(
+      candidateMove.candidateMove,
+      BOT_PLAYER_NUMBER,
+    );
+  }
+  sortBotMoves(candidateMoves);
+  const { source, destination } = candidateMoves[0].candidateMove;
+  dispatch(source);
+  setTimeout(() => {
+    dispatch(destination);
+  }, 500);
+  await new Promise(resolve => setTimeout(resolve, 500));
 }
 
 export async function makeBotMove(

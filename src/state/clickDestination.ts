@@ -364,11 +364,12 @@ export function clickPenaltyDestination(
   state: GameState,
   action: ClickPenaltyDestinationAction,
 ) {
+  const stateCopy = { ...state };
   const { playerNumber } = action;
-  const { tileColor, tileCount, factoryNumber } = state.source!;
-  const factories = state.factories;
+  const { tileColor, tileCount, factoryNumber } = stateCopy.source!;
+  const factories = stateCopy.factories;
   const sourceTiles = factories[factoryNumber].tiles;
-  const penaltyRow = state.players[playerNumber].penaltyRows;
+  const penaltyRow = stateCopy.players[playerNumber].penaltyRows;
   const isOverflowFactory = factoryNumber === OVERFLOW_FACTORY_NUMBER;
 
   manageWhiteTile(tileColor, sourceTiles, penaltyRow, isOverflowFactory);
@@ -402,7 +403,7 @@ export function clickPenaltyDestination(
     );
   }
 
-  return endPlayerTurn(state, factories, action);
+  return endPlayerTurn(stateCopy, factories, action);
 }
 
 export function clickDestination(
@@ -410,33 +411,36 @@ export function clickDestination(
   action: ClickDestinationAction,
 ) {
   console.log('clickDestination state', state);
-
+  const stateCopy = { ...state };
   const { rowNumber, playerNumber } = action;
-  const { tileColor, tileCount, factoryNumber } = state.source!;
-  const factories = state.factories;
+  const { tileColor, tileCount, factoryNumber } = stateCopy.source!;
+  const factories = stateCopy.factories;
   const sourceTiles = factories[factoryNumber].tiles;
 
   manageWhiteTile(
     tileColor,
     sourceTiles,
-    state.players[playerNumber].penaltyRows,
+    stateCopy.players[playerNumber].penaltyRows,
     factoryNumber === OVERFLOW_FACTORY_NUMBER,
   );
 
   updatePenaltyRow(
-    state.players[playerNumber].penaltyRows,
-    state.players[playerNumber].rows[rowNumber],
+    stateCopy.players[playerNumber].penaltyRows,
+    stateCopy.players[playerNumber].rows[rowNumber],
     tileColor,
     tileCount,
   );
 
   const openSpaceCount = calculateOpenSpaceCount(
-    state.players[playerNumber].rows[rowNumber],
+    stateCopy.players[playerNumber].rows[rowNumber],
     tileCount,
   );
 
   // Move source tile to destination row
-  state.players[playerNumber].rows[rowNumber] = { tileColor, openSpaceCount };
+  stateCopy.players[playerNumber].rows[rowNumber] = {
+    tileColor,
+    openSpaceCount,
+  };
 
   if (factoryNumber === OVERFLOW_FACTORY_NUMBER) {
     // Remove chosen color tiles from overflow
@@ -452,5 +456,5 @@ export function clickDestination(
     );
   }
 
-  return endPlayerTurn(state, factories, action);
+  return endPlayerTurn(stateCopy, factories, action);
 }
