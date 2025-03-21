@@ -33,3 +33,7 @@ export function getRandomColorPalette() {
   const randomIndex = Math.floor(Math.random() * palletes.length);
   return palletes[randomIndex];
 }
+
+export function getOtherPlayer(playerNumber: number) {
+  return playerNumber === 0 ? 1 : 0;
+}

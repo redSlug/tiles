@@ -11,6 +11,13 @@ import {
 } from './clickDestination.ts';
 import { setLocalStorage } from '../storage/localStorage.ts';
 
+export function searchMovesRouterReducer(state: GameState, action: Action) {
+  if (action.type === 'set_peer_game_state') {
+    throw new Error('searchRouterReducer cannot set communicate with peer');
+  }
+  return clickRouterReducer(state, action);
+}
+
 function clickRouterReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
     case 'click_source':

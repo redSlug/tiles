@@ -7,6 +7,7 @@ import { usePeerJsStore } from './networking/PeerStore.ts';
 import { useEffect } from 'react';
 import { getLocalStorage } from './storage/localStorage.ts';
 import { Action, GameState, GameType } from './types/all.ts';
+import { getOtherPlayer } from './utilities/all.ts';
 
 function Board({
   titleString,
@@ -93,16 +94,16 @@ function Board({
             gameDispatch={dispatch}
             peerDataConnection={peerDataConnection!}
             state={state}
-            playerNumber={playerNumber === 0 ? 1 : 0}
+            playerNumber={getOtherPlayer(playerNumber)}
             overflowTiles={
-              state.players[playerNumber === 0 ? 1 : 0].penaltyRows
+              state.players[getOtherPlayer(playerNumber)].penaltyRows
             }
             gameType={gameType}
           />
           <FinalRows
-            finalRows={state.players[playerNumber === 0 ? 1 : 0].finalRows}
+            finalRows={state.players[getOtherPlayer(playerNumber)].finalRows}
             playerName={player2Name}
-            playerScore={state.players[playerNumber === 0 ? 1 : 0].score}
+            playerScore={state.players[getOtherPlayer(playerNumber)].score}
           />
         </div>
       </div>
