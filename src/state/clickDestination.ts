@@ -19,6 +19,7 @@ import {
   getInitialFactories,
   getEmptyRows,
 } from './initialGame';
+import { getOtherPlayer } from '../utilities/all.ts';
 
 function clearFullRows(rows: Array<Row>) {
   const newRows = getEmptyRows();
@@ -51,6 +52,7 @@ function manageWhiteTile(
       tile => tile.tileColor === undefined,
     );
     // put white tile in penalty area
+    console.log('=====> penaltyRow', penaltyRow);
     penaltyRow[lastOverflowIndex].tileColor = 'white';
   }
 }
@@ -72,8 +74,15 @@ function updatePenaltyRow(
     );
     let tileCountToPlaceInOverflow = Math.abs(overflowCount);
 
+    if (lastOpenOverflowIndex == -1) {
+      return;
+    }
+
     for (let i = lastOpenOverflowIndex; i < playerPenaltyRow.length; i++) {
       if (tileCountToPlaceInOverflow > 0) {
+        console.log('====> playerPenaltyRow', playerPenaltyRow);
+        console.log('====> tileColor', tileColor, i, lastOpenOverflowIndex);
+
         playerPenaltyRow[i].tileColor = tileColor;
         tileCountToPlaceInOverflow -= 1;
       }
@@ -291,7 +300,7 @@ function endPlayerTurn(
   const player1 = state.players[1];
   const isRoundOver = factories.every(c => c.tiles.length == 0);
 
-  let nextPlayerTurn = state.playerTurn === 0 ? 1 : 0;
+  let nextPlayerTurn = getOtherPlayer(state.playerTurn);
   const finalPlayerRows = [player0.finalRows, player1.finalRows];
 
   if (isRoundOver) {

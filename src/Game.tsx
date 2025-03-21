@@ -19,7 +19,7 @@ import {
 } from './constants/all.ts';
 import { useWindowSize } from 'react-use';
 import Confetti from 'react-confetti';
-import { getRandomColorPalette } from './utilities/all.ts';
+import { getOtherPlayer, getRandomColorPalette } from './utilities/all.ts';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
@@ -67,14 +67,14 @@ function Game() {
     return (
       state.isGameOver &&
       state.players[playerNumber].score >
-        state.players[playerNumber === 0 ? 1 : 0].score
+        state.players[getOtherPlayer(playerNumber)].score
     );
   }
 
   function otherPlayerHasWon(): boolean {
     return (
       state.isGameOver &&
-      state.players[playerNumber === 0 ? 1 : 0].score >
+      state.players[getOtherPlayer(playerNumber)].score >
         state.players[playerNumber].score
     );
   }

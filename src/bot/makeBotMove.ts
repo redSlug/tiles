@@ -4,21 +4,57 @@ import {
   ClickPenaltyDestinationAction,
   GameState,
   FinalTile,
-  Player,
 } from '../types/all.ts';
 import { BOT_PLAYER_NUMBER } from '../constants/all.ts';
+import { getOtherPlayer } from '../utilities/all.ts';
 
 type CandidateMove = {
+  initialGameState: GameState;
   source: ClickSourceAction;
   destination: ClickDestinationAction | ClickPenaltyDestinationAction;
 };
 
+type ScoredCandidateMove = {
+  candidateMove: CandidateMove;
+  evalScore: number;
+  scoreDelta: number | undefined;
+  nextGameState: GameState | undefined;
+};
+
+// function getNewGameState(candidateMove: CandidateMove): GameState {
+//   const stateAfterSourceMove = {
+//     ...searchMovesRouterReducer(
+//       candidateMove.initialGameState,
+//       candidateMove.source,
+//     ),
+//   };
+//
+//   return searchMovesRouterReducer(
+//     stateAfterSourceMove,
+//     candidateMove.destination,
+//   );
+// }
+//
+// function getPotentialMoveScoreDelta(
+//   candidateMove: CandidateMove,
+//   playerNumber: number,
+// ): number {
+//   const initialState = candidateMove.initialGameState;
+//   const newState = getNewGameState(candidateMove);
+//   return (
+//     newState.players[playerNumber].score -
+//     initialState.players[playerNumber].score
+//   );
+// }
+
 function getEvaluationScore(
-  state: GameState,
   candidateMove: CandidateMove,
-  player: Player,
-  opponent: Player,
+  playerNumber: number,
 ): number {
+  const player = candidateMove.initialGameState.players[playerNumber];
+  const opponent =
+    candidateMove.initialGameState.players[getOtherPlayer(playerNumber)];
+  const factories = candidateMove.initialGameState.factories;
   let score = 0;
   const { source, destination } = candidateMove;
   if (destination.type === 'click_penalty_destination') {
@@ -53,7 +89,7 @@ function getEvaluationScore(
   if (opponentColorRows.length > 0) {
     score += source.tileCount * 5;
   }
-  const isLateRound = state.factories.flatMap(f => f.tiles).length < 8;
+  const isLateRound = factories.flatMap(f => f.tiles).length < 8;
   if (isLateRound && leftoverSpaceCount === 0) {
     score += 15;
   }
@@ -69,8 +105,12 @@ function finalRowHasColorUnfilled(
   });
 }
 
-function getCandidateMoves(state: GameState): Array<CandidateMove> {
+function getScoredCandidateMoves(
+  state: GameState,
+  playerNumber: number,
+): Array<ScoredCandidateMove> {
   const candidateMoves = [];
+  console.log('getting scored candidate moves');
   const candidateSourceActions = state.factories
     .map((factory, factoryIndex) => {
       return factory.tiles.map(
@@ -86,9 +126,9 @@ function getCandidateMoves(state: GameState): Array<CandidateMove> {
     })
     .flat()
     .filter(source => source.tileCount > 0 && source.tileColor !== 'white');
-  const finalRows = state.players[1].finalRows;
+  const finalRows = state.players[playerNumber].finalRows;
   for (const source of candidateSourceActions) {
-    const availableRows = state.players[1].rows
+    const availableRows = state.players[playerNumber].rows
       .map((row, rowNumber) => ({
         rowNumber,
         row,
@@ -111,24 +151,38 @@ function getCandidateMoves(state: GameState): Array<CandidateMove> {
             type: 'click_destination',
             rowNumber: item.rowNumber,
             peerDataConnection: undefined,
-            playerNumber: BOT_PLAYER_NUMBER,
+            playerNumber,
             gameType: 'bot',
           }) as ClickDestinationAction,
       );
     for (const destination of availableDestinationActions) {
-      candidateMoves.push({ source, destination });
+      candidateMoves.push({
+        initialGameState: state,
+        source,
+        destination,
+      } as CandidateMove);
     }
     candidateMoves.push({
+      initialGameState: state,
       source,
       destination: {
         type: 'click_penalty_destination',
         peerDataConnection: undefined,
-        playerNumber: BOT_PLAYER_NUMBER,
+        playerNumber,
         gameType: 'bot',
       } as ClickPenaltyDestinationAction,
     });
   }
-  return candidateMoves;
+
+  return candidateMoves.map(
+    candidateMove =>
+      ({
+        candidateMove,
+        evalScore: getEvaluationScore(candidateMove, playerNumber),
+        scoreDelta: undefined,
+        nextGameState: undefined,
+      }) as ScoredCandidateMove,
+  );
 }
 
 export async function makeBotMove(
@@ -140,30 +194,15 @@ export async function makeBotMove(
       | ClickPenaltyDestinationAction,
   ) => void,
 ): Promise<void> {
-  const candidateMoves = getCandidateMoves(state);
-
+  const stateCopy = { ...state };
+  const candidateMoves = getScoredCandidateMoves(stateCopy, BOT_PLAYER_NUMBER);
   candidateMoves.sort((moveA, moveB) => {
-    const scoreA = getEvaluationScore(
-      state,
-      moveA,
-      state.players[1],
-      state.players[0],
-    );
-    const scoreB = getEvaluationScore(
-      state,
-      moveB,
-      state.players[1],
-      state.players[0],
-    );
-    return scoreB - scoreA;
+    return moveB.evalScore - moveA.evalScore;
   });
-
-  const { source, destination } = candidateMoves[0];
-
+  const { source, destination } = candidateMoves[0].candidateMove;
   dispatch(source);
   setTimeout(() => {
     dispatch(destination);
   }, 500);
   await new Promise(resolve => setTimeout(resolve, 500));
-  console.log('makeBotMove complete');
 }
