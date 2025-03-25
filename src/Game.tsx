@@ -50,7 +50,7 @@ function Game() {
       state.players[getOtherPlayer(playerNumber)].score;
     if (
       gameType === 'bot' &&
-      // state.isGameOver &&
+      state.isGameOver &&
       playerIsWinner &&
       !showWinModal
     ) {

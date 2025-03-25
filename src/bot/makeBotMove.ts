@@ -230,9 +230,9 @@ export async function makeBotMove(
 ): Promise<void> {
   const stateCopy = { ...state };
   const candidateMoves = getScoredCandidateMoves(stateCopy, BOT_PLAYER_NUMBER);
-  // candidateMoves.sort((moveA, moveB) => {
-  //   return moveB.evalScore - moveA.evalScore;
-  // });
+  candidateMoves.sort((moveA, moveB) => {
+    return moveB.evalScore - moveA.evalScore;
+  });
   const { source, destination } = candidateMoves[0].candidateMove;
   dispatch(source);
   setTimeout(() => {
