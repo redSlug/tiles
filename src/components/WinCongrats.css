@@ -1,0 +1,85 @@
+.win-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.win-modal {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.win-modal h2 {
+  margin-top: 0;
+  font-size: 28px;
+  color: #333;
+}
+
+.win-modal p {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.win-modal p:nth-child(3) {
+  font-weight: bold;
+  font-size: 22px;
+  margin: 20px 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.form-group input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.win-modal button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.win-modal button:hover {
+  background-color: #45a049;
+}
+
+.win-modal button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.success-message {
+  color: #4caf50;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 20px 0;
+} 

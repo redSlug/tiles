@@ -20,6 +20,7 @@ import {
 import { useWindowSize } from 'react-use';
 import Confetti from 'react-confetti';
 import { getOtherPlayer, getRandomColorPalette } from './utilities/all.ts';
+import WinCongrats from './components/WinCongrats.tsx';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
@@ -29,6 +30,7 @@ function Game() {
   const [gameType, setGameType] = useState<GameType>('remote');
   const [botThinking, setBotThinking] = useState<boolean>(false);
   const [hostLoaded, setHostLoaded] = useState<boolean>(false);
+  const [showWinModal, setShowWinModal] = useState<boolean>(false);
   const { width, height } = useWindowSize();
 
   function playLocalButtonHandler() {
@@ -41,6 +43,21 @@ function Game() {
     setGameType('bot');
     setPlayerNumber(HUMAN_PLAYER_NUMBER);
   }
+
+  useEffect(() => {
+    const playerIsWinner =
+      state.players[playerNumber].score >
+      state.players[getOtherPlayer(playerNumber)].score;
+    if (
+      gameType === 'bot' &&
+      state.isGameOver &&
+      playerIsWinner &&
+      !showWinModal
+    ) {
+      console.log('showing win modal at turn', state.turnNumber);
+      setShowWinModal(true);
+    }
+  }, [state.turnNumber, gameType, showWinModal]);
 
   useEffect(() => {
     if (
@@ -157,14 +174,21 @@ function Game() {
   }
 
   const board = (
-    <Board
-      state={state}
-      dispatch={dispatch}
-      titleString={titleString}
-      gameType={gameType}
-      playerNumber={playerNumber}
-      shareCode={shareCode!}
-    />
+    <>
+      <Board
+        state={state}
+        dispatch={dispatch}
+        titleString={titleString}
+        gameType={gameType}
+        playerNumber={playerNumber}
+        shareCode={shareCode!}
+      />
+      <WinCongrats
+        isOpen={showWinModal}
+        onClose={() => setShowWinModal(false)}
+        score={state.players[playerNumber].score}
+      />
+    </>
   );
 
   if (currentPlayerHasWon() || localPlayerHasWon()) {
