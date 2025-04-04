@@ -6,7 +6,7 @@ interface ButtonProps {
   onClose: () => void;
   header: string;
   message: string;
-  buttonValue: string;
+  buttonValue: string | undefined;
 }
 
 export default function Modal({
@@ -23,7 +23,9 @@ export default function Modal({
       <div className="modal">
         <h2>{header}</h2>
         <p>{message}</p>
-        <Button onClick={onClose} value={buttonValue} />
+        {buttonValue === undefined ? null : (
+          <Button onClick={onClose} value={buttonValue} />
+        )}
       </div>
     </div>
   );

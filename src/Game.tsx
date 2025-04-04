@@ -192,8 +192,8 @@ function Game() {
         isOpen={showWinnerModal}
         onClose={() => setShowWinnerModal(false)}
         header={'congratulations!'}
-        message={'stop playing and ' + getRandomElement(antiAddictionMessages)}
-        buttonValue={'ok'}
+        message={'celebrate by ' + getRandomElement(antiAddictionMessages)}
+        buttonValue={undefined}
       />
     </>
   );
