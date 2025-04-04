@@ -29,7 +29,7 @@ export function getSpecificColorPalette(index: number) {
   return palettes[index];
 }
 
-export function getRandomElement(array: Array<any>) {
+export function getRandomElement<T>(array: Array<T>) {
   const randomIndex = Math.floor(Math.random() * array.length);
   return array[randomIndex];
 }

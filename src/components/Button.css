@@ -25,6 +25,7 @@
 }
 
 .button:active,
+.button:focus,
 .button:hover {
   outline: 0;
 }
