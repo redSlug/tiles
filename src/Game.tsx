@@ -19,8 +19,13 @@ import {
 } from './constants/all.ts';
 import { useWindowSize } from 'react-use';
 import Confetti from 'react-confetti';
-import { getOtherPlayer, getRandomColorPalette } from './utilities/all.ts';
-import WinCongrats from './components/WinCongrats.tsx';
+import {
+  antiAddictionMessages,
+  getOtherPlayer,
+  getRandomColorPalette,
+  getRandomElement,
+} from './utilities/all.ts';
+import Modal from './components/Modal.tsx';
 
 function Game() {
   const { state, dispatch } = useGameState(getInitialState());
@@ -30,7 +35,7 @@ function Game() {
   const [gameType, setGameType] = useState<GameType>('remote');
   const [botThinking, setBotThinking] = useState<boolean>(false);
   const [hostLoaded, setHostLoaded] = useState<boolean>(false);
-  const [showWinModal, setShowWinModal] = useState<boolean>(false);
+  const [showWinnerModal, setShowWinnerModal] = useState<boolean>(false);
   const { width, height } = useWindowSize();
 
   function playLocalButtonHandler() {
@@ -52,12 +57,12 @@ function Game() {
       gameType === 'bot' &&
       state.isGameOver &&
       playerIsWinner &&
-      !showWinModal
+      !showWinnerModal
     ) {
       console.log('showing win modal at turn', state.turnNumber);
-      setShowWinModal(true);
+      setShowWinnerModal(true);
     }
-  }, [state.turnNumber, gameType, showWinModal]);
+  }, [state.turnNumber, gameType, showWinnerModal]);
 
   useEffect(() => {
     if (
@@ -183,14 +188,15 @@ function Game() {
         playerNumber={playerNumber}
         shareCode={shareCode!}
       />
-      <WinCongrats
-        isOpen={showWinModal}
-        onClose={() => setShowWinModal(false)}
-        score={state.players[playerNumber].score}
+      <Modal
+        isOpen={showWinnerModal}
+        onClose={() => setShowWinnerModal(false)}
+        header={'congratulations, you won!'}
+        message={'stop playing and ' + getRandomElement(antiAddictionMessages)}
+        buttonValue={'ok'}
       />
     </>
   );
-
   if (currentPlayerHasWon() || localPlayerHasWon()) {
     return (
       <>

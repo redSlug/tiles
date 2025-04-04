@@ -13,7 +13,7 @@ export function hasDuplicateField<T, K extends keyof T>(
   return false;
 }
 
-const palletes = [
+const palettes = [
   ['#4f5d78', '#5b95b9', '#6ac2e6', '#96c7f0', '#bacdf4', '#d7d4f4', '#ddd2ec'],
   ['#9ca577', '#cdd8a3', '#faf7bc', '#ffdfb4', '#ffcac6', '#ffbfe7', '#ffb9cf'],
   ['#4b7076', '#b7c0f2', '#a59def', '#a177e3', '#a745ce', '#e72786', '#e8734b'],
@@ -26,14 +26,40 @@ const palletes = [
 ];
 
 export function getSpecificColorPalette(index: number) {
-  return palletes[index];
+  return palettes[index];
+}
+
+export function getRandomElement(array: Array<any>) {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
 }
 
 export function getRandomColorPalette() {
-  const randomIndex = Math.floor(Math.random() * palletes.length);
-  return palletes[randomIndex];
+  return getRandomElement(palettes);
 }
 
 export function getOtherPlayer(playerNumber: number) {
   return playerNumber === 0 ? 1 : 0;
 }
+
+export const antiAddictionMessages = [
+  'message a friend',
+  'drink some water',
+  'write some gratitudes',
+  'check in on someone',
+  'draw a picture',
+  'write some self affirmations',
+  'look at pictures',
+  'do exercises',
+  'do some stretches',
+  'listen to a podcast',
+  'dance',
+  'smile in the mirror',
+  'do something creative',
+  'write yourself a love letter',
+  'plan your next vacation',
+  'go outside',
+  'study a new language',
+  'make plans with a friend',
+  'write a letter to a friend',
+];

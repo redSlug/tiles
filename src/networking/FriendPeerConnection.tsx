@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import Peer from 'peerjs';
 import { Action } from '../types/all.ts';
-import './PeerConnection.css';
 import { usePeerJsStore } from './PeerStore.ts';
 import { getParsedGameState, peerConfig } from './Shared.ts';
 

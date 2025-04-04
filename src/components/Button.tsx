@@ -8,7 +8,7 @@ function Button({
   value: string | undefined;
 }) {
   return (
-    <button className={'share-button'} key={`share-game`} onClick={onClick}>
+    <button className={'button'} onClick={onClick}>
       {value}
     </button>
   );
