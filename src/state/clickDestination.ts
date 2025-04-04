@@ -19,7 +19,7 @@ import {
   getInitialFactories,
   getEmptyRows,
 } from './initialGame';
-import { getOtherPlayer } from '../utilities/all.ts';
+import { getOtherPlayer } from '../utilities/all';
 
 function clearFullRows(rows: Array<Row>) {
   const newRows = getEmptyRows();
