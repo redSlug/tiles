@@ -110,7 +110,7 @@ function HostPeerConnection({
               .then(() => console.log('==> host successfully shared'))
               .catch(error => console.log('==> host errored sharing', error));
           }}
-          value="Click + share to play with remote friend"
+          value="Share to play with remote friend"
         />
       </div>
     );
