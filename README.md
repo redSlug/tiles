@@ -17,18 +17,18 @@ npm run dev
 
 ## Deploy
 
+### Option 1:
+[Use github Pages](.github/workflows/deploy.yaml)
+
+### Option 2:
 ```
 npm run deploy
 ```
 
 ## Enhancement ideas
 
-- make it a multi 2-4 player game
+- make it a multi 2-4 player game (host has a connection w/ every peer)
 - add a timer and have timeout (30 seconds)
-- add celebration upon winning game
-- randomly generate initial turn number to have start player be random
 - bring back `<StrictMode>`
-- add a browser icon
+- add a browser icon and custom domain name
 - make it default to full screen on mobile / or turn it into a mobile app
-- player who picks up white tile should go first following round
-- make bot player number random (don't hard code it)
