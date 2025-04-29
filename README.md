@@ -18,9 +18,11 @@ npm run dev
 ## Deploy
 
 ### Option 1:
+
 [Use github Pages](.github/workflows/deploy.yaml)
 
 ### Option 2:
+
 ```
 npm run deploy
 ```
