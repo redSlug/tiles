@@ -6,7 +6,7 @@ import {
   FinalTile,
 } from '../types/all.ts';
 import { BOT_PLAYER_NUMBER } from '../constants/all.ts';
-import { getOtherPlayer } from '../utilities/all.ts';
+import { deepCopy, getOtherPlayer } from '../utilities/all.ts';
 import { searchMovesRouterReducer } from '../state/useGameState.ts';
 import { sortBy } from 'sort-by-typescript';
 
@@ -200,7 +200,7 @@ export async function makeBetterBotMove(
       | ClickPenaltyDestinationAction,
   ) => void,
 ): Promise<void> {
-  const stateCopy = { ...state };
+  const stateCopy = deepCopy(state);
   const candidateMoves = getScoredCandidateMoves(stateCopy, BOT_PLAYER_NUMBER);
 
   for (const candidateMove of candidateMoves) {
@@ -228,7 +228,7 @@ export async function makeBotMove(
       | ClickPenaltyDestinationAction,
   ) => void,
 ): Promise<void> {
-  const stateCopy = { ...state };
+  const stateCopy = deepCopy(state);
   const candidateMoves = getScoredCandidateMoves(stateCopy, BOT_PLAYER_NUMBER);
   candidateMoves.sort((moveA, moveB) => {
     return moveB.evalScore - moveA.evalScore;

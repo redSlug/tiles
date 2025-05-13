@@ -34,6 +34,10 @@ export function getRandomElement<T>(array: Array<T>) {
   return array[randomIndex];
 }
 
+export function deepCopy<T>(originalObject: T): T {
+  return JSON.parse(JSON.stringify(originalObject));
+}
+
 export function getRandomColorPalette() {
   return getRandomElement(palettes);
 }

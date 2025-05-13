@@ -19,7 +19,7 @@ import {
   getInitialFactories,
   getEmptyRows,
 } from './initialGame';
-import { getOtherPlayer } from '../utilities/all';
+import { deepCopy, getOtherPlayer } from '../utilities/all';
 
 function clearFullRows(rows: Array<Row>) {
   const newRows = getEmptyRows();
@@ -364,7 +364,7 @@ export function clickPenaltyDestination(
   state: GameState,
   action: ClickPenaltyDestinationAction,
 ) {
-  const stateCopy = { ...state };
+  const stateCopy = deepCopy(state);
   const { playerNumber } = action;
   const { tileColor, tileCount, factoryNumber } = stateCopy.source!;
   const factories = stateCopy.factories;
@@ -411,7 +411,7 @@ export function clickDestination(
   action: ClickDestinationAction,
 ) {
   console.log('clickDestination state', state);
-  const stateCopy = { ...state };
+  const stateCopy = deepCopy(state);
   const { rowNumber, playerNumber } = action;
   const { tileColor, tileCount, factoryNumber } = stateCopy.source!;
   const factories = stateCopy.factories;
