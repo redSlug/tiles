@@ -29,8 +29,8 @@ npm run deploy
 
 ## Enhancement ideas
 
+- improve the AI by searching for optimal moves
 - make it a multi 2-4 player game (host has a connection w/ every peer)
 - add a timer and have timeout (30 seconds)
-- bring back `<StrictMode>`
-- add a browser icon and custom domain name
+- add a custom domain name
 - make it default to full screen on mobile / or turn it into a mobile app
