@@ -178,6 +178,7 @@ function Game() {
     );
   }
 
+  const localPlayerWon = localPlayerHasWon();
   const board = (
     <>
       <Board
@@ -191,13 +192,15 @@ function Game() {
       <Modal
         isOpen={showWinnerModal}
         onClose={() => setShowWinnerModal(false)}
-        header={'congratulations!'}
+        header={
+          localPlayerWon ? 'congratulations, you win!' : 'congratulations!'
+        }
         message={'celebrate by ' + getRandomElement(antiAddictionMessages)}
         buttonValue={undefined}
       />
     </>
   );
-  if (currentPlayerHasWon() || localPlayerHasWon()) {
+  if (currentPlayerHasWon() || localPlayerWon) {
     return (
       <>
         <Confetti
