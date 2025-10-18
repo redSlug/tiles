@@ -61,16 +61,14 @@ function Board({
 
   return (
     <div className="game-container">
-      <h1 className={'title-string'}>{titleString}</h1>
       <div className={'break'}></div>
+      <h1 className={'title-string'}>{titleString}</h1>
       <Factories
         state={state}
         gameDispatch={dispatch}
         playerNumber={playerNumber}
         gameType={gameType}
       />
-
-      <div className={'break'}></div>
 
       <div className={'destinations'}>
         <div className={'player-board'}>
