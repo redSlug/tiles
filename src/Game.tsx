@@ -167,7 +167,7 @@ function Game() {
           </>
         ) : (
           <>
-            <div className={'title-string'}>loading</div>
+            <div className={'loading-string'}>loading</div>
             <FriendPeerConnection
               gameDispatch={dispatch}
               peerShareCode={shareCode}

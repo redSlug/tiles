@@ -1,5 +1,5 @@
 import './App.css';
-import './Game.css';
+import './Board.css';
 import Rows from './Rows.tsx';
 import Factories from './Factories.tsx';
 import FinalRows from './FinalRows.tsx';
