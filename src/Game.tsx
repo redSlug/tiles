@@ -198,12 +198,12 @@ function Game() {
       <div className="button-container">
         <Button
           onClick={playPeerButtonHandler}
-          value="Click to play with peer"
+          value="Click to play with friend"
         />
         <Button onClick={playBotButtonHandler} value="Click to play with bot" />
         <Button
           onClick={playLocalButtonHandler}
-          value="Click to play with local friend"
+          value="Click to play in person"
         />
       </div>
     );
