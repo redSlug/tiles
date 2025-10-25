@@ -2,37 +2,51 @@ import { useCallback, useEffect, useState } from 'react';
 import Peer, { DataConnection } from 'peerjs';
 import { Action, GameState } from '../types/all.ts';
 import { usePeerJsStore } from './PeerStore.ts';
-import Button from '../components/Button.tsx';
+import { GameType } from '../types/all.ts';
 import { getParsedGameState, peerConfig } from './Shared.ts';
 import { HOST_PLAYER_NUMBER } from '../constants/all.ts';
 
 const baseUrl = import.meta.env.VITE_BASE_URL || 'garbage';
 
-function HostPeerConnection({
+export function useHostPeerConnection({
   gameState,
+  gameType,
+  shouldConnect,
   gameDispatch,
-  peerShareCode,
   setPlayerNumber,
   onLoaded,
+  onShareLinkGenerated,
+  onPeerConnected,
+  setShowPeerModal,
+  showPeerModal,
 }: {
   gameState: GameState;
+  gameType: GameType | undefined;
+  shouldConnect: boolean;
   gameDispatch: (action: Action) => void;
-  peerShareCode: string | undefined;
   setPlayerNumber: (playerNumber: number) => void;
   onLoaded: () => void;
+  onShareLinkGenerated: (shareLink: string) => void;
+  onPeerConnected: (connected: boolean) => void;
+  setShowPeerModal: (showPeerModal: boolean) => void;
+  showPeerModal: boolean;
 }) {
   const setZustandConnection = usePeerJsStore(
     state => state.setZustandConnection,
   );
-
-  const [myPeerId, setMyPeerId] = useState('');
+  const [, setMyPeerId] = useState('');
   const [shouldSendMessage, setShouldSendMessage] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const [, setIsConnected] = useState(false);
   const [peer, setPeer] = useState<undefined | Peer>(undefined);
 
+  // create the peer connection
   useEffect(() => {
+    if (shouldConnect) {
+      return;
+    }
+
     setPeer(new Peer(peerConfig));
-  }, []);
+  }, [gameType]);
 
   const sendInitialGameToPeer = useCallback(
     (conn: DataConnection) => {
@@ -50,8 +64,14 @@ function HostPeerConnection({
   );
 
   useEffect(() => {
+    if (shouldConnect) {
+      return;
+    }
+
     peer?.on('open', id => {
       setMyPeerId(id);
+      const shareLink = `${baseUrl}/#/game/${id}`;
+      onShareLinkGenerated(shareLink);
       onLoaded();
     });
     peer?.on('connection', (conn: DataConnection) => {
@@ -67,6 +87,8 @@ function HostPeerConnection({
       });
       conn.on('open', () => {
         sendInitialGameToPeer(conn);
+        onPeerConnected(true);
+        setShowPeerModal(false);
       });
     });
 
@@ -82,39 +104,5 @@ function HostPeerConnection({
     peer?.on('error', function (err) {
       console.log('error will connect automatically when back on line', err);
     });
-  }, [peer, sendInitialGameToPeer]);
-
-  if (isConnected) {
-    return <></>;
-  }
-
-  if (peerShareCode === undefined && myPeerId !== '') {
-    return (
-      <div>
-        <Button
-          onClick={() => {
-            const shareLink = `${baseUrl}/#/game/${myPeerId}`;
-            navigator.clipboard
-              .writeText(shareLink)
-              .then(() =>
-                console.log('==> host successfully copying to clipboard'),
-              )
-              .catch(error =>
-                console.log('==> host errored copying to clipboard', error),
-              );
-            navigator
-              .share({
-                title: 'tiles game',
-                url: shareLink,
-              })
-              .then(() => console.log('==> host successfully shared'))
-              .catch(error => console.log('==> host errored sharing', error));
-          }}
-          value="Share to play with remote friend"
-        />
-      </div>
-    );
-  }
+  }, [peer, sendInitialGameToPeer, showPeerModal, gameType]);
 }
-
-export default HostPeerConnection;

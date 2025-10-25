@@ -8,7 +8,7 @@ import { getInitialState } from './state/initialGame.ts';
 import { usePeerJsStore } from './networking/PeerStore.ts';
 import Button from './components/Button.tsx';
 import Board from './Board.tsx';
-import HostPeerConnection from './networking/HostPeerConnection.tsx';
+import { useHostPeerConnection } from './networking/useHostPeerConnection.ts';
 import FriendPeerConnection from './networking/FriendPeerConnection.tsx';
 import { GameType } from './types/all.ts';
 import { makeBotMove } from './bot/makeBotMove.ts';
@@ -32,15 +32,39 @@ function Game() {
   const { shareCode } = useParams();
   const zustandConnection = usePeerJsStore(state => state.zustandConnection);
   const [playerNumber, setPlayerNumber] = useState<number>(PEER_PLAYER_NUMBER);
-  const [gameType, setGameType] = useState<GameType>('remote');
+  const [gameType, setGameType] = useState<GameType | undefined>(
+    shareCode ? 'remote' : undefined,
+  );
   const [botThinking, setBotThinking] = useState<boolean>(false);
-  const [hostLoaded, setHostLoaded] = useState<boolean>(false);
+  const [_, setPeerConnected] = useState<boolean>(false);
+  const [shareLink, setShareLink] = useState<string | undefined>(undefined);
   const [showWinnerModal, setShowWinnerModal] = useState<boolean>(false);
+  const [showPeerModal, setShowPeerModal] = useState<boolean>(false);
   const { width, height } = useWindowSize();
+
+  useHostPeerConnection({
+    gameState: state,
+    gameType,
+    shouldConnect: shareCode === undefined && gameType === 'remote',
+    gameDispatch: dispatch,
+    setPlayerNumber,
+    onLoaded: () => {},
+    onShareLinkGenerated: setShareLink,
+    onPeerConnected: setPeerConnected,
+    setShowPeerModal,
+    showPeerModal,
+  });
 
   function playLocalButtonHandler() {
     console.log('playLocalButtonHandler');
     setGameType('local');
+  }
+
+  function playPeerButtonHandler() {
+    console.log('playPeerButtonHandler');
+    setGameType('remote');
+    setPlayerNumber(PEER_PLAYER_NUMBER);
+    setShowPeerModal(true);
   }
 
   function playBotButtonHandler() {
@@ -140,45 +164,51 @@ function Game() {
 
   const titleString = getTitleString();
 
-  if (gameType === 'remote' && zustandConnection === undefined) {
+  if (showPeerModal) {
+    return (
+      <>
+        <Modal
+          isOpen={showPeerModal}
+          onClose={() => setShowPeerModal(false)}
+          header={shareLink ? 'share this link with your friend' : 'waiting'}
+          message={shareLink || 'ask your friend for a share link'}
+          buttonValue="OK"
+        />
+      </>
+    );
+  }
+
+  if (gameType === undefined) {
     return (
       <div className="button-container">
-        {shareCode === undefined ? (
-          <>
-            <HostPeerConnection
-              gameState={state}
-              gameDispatch={dispatch}
-              peerShareCode={shareCode}
-              setPlayerNumber={setPlayerNumber}
-              onLoaded={() => setHostLoaded(true)}
-            />
-            {hostLoaded && (
-              <>
-                <Button
-                  onClick={playBotButtonHandler}
-                  value="Click to play with bot"
-                />
-                <Button
-                  onClick={playLocalButtonHandler}
-                  value="Click to play with local friend"
-                />
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            <div className={'loading-string'}>loading</div>
-            <FriendPeerConnection
-              gameDispatch={dispatch}
-              peerShareCode={shareCode}
-            />
-          </>
-        )}
+        <Button
+          onClick={playPeerButtonHandler}
+          value="Click to play with peer"
+        />
+        <Button onClick={playBotButtonHandler} value="Click to play with bot" />
+        <Button
+          onClick={playLocalButtonHandler}
+          value="Click to play with local friend"
+        />
       </div>
     );
   }
 
-  const localPlayerWon = localPlayerHasWon();
+  if (gameType === 'remote' && zustandConnection === undefined) {
+    return (
+      <div className="button-container">
+        <>
+          <div className={'loading-string'}>loading</div>
+          <FriendPeerConnection
+            gameDispatch={dispatch}
+            peerShareCode={shareCode}
+            shouldConnect={shareCode !== undefined && gameType === 'remote'}
+          />
+        </>
+      </div>
+    );
+  }
+
   const board = (
     <>
       <Board
@@ -193,14 +223,14 @@ function Game() {
         isOpen={showWinnerModal}
         onClose={() => setShowWinnerModal(false)}
         header={
-          localPlayerWon ? 'congratulations, you win!' : 'congratulations!'
+          localPlayerHasWon() ? 'congratulations, you win!' : 'congratulations!'
         }
         message={'celebrate by ' + getRandomElement(antiAddictionMessages)}
         buttonValue={undefined}
       />
     </>
   );
-  if (currentPlayerHasWon() || localPlayerWon) {
+  if (currentPlayerHasWon() || localPlayerHasWon()) {
     return (
       <>
         <Confetti

@@ -7,9 +7,11 @@ import { getParsedGameState, peerConfig } from './Shared.ts';
 function FriendPeerConnection({
   gameDispatch,
   peerShareCode,
+  shouldConnect,
 }: {
   gameDispatch: (action: Action) => void;
   peerShareCode: string | undefined;
+  shouldConnect: boolean;
 }) {
   const setZustandConnection = usePeerJsStore(
     state => state.setZustandConnection,
@@ -19,10 +21,17 @@ function FriendPeerConnection({
   const [peer, setPeer] = useState<undefined | Peer>(undefined);
 
   useEffect(() => {
+    if (!shouldConnect) {
+      return;
+    }
     setPeer(new Peer(peerConfig));
   }, []);
 
   useEffect(() => {
+    if (!shouldConnect) {
+      return;
+    }
+
     peer?.on('open', id => {
       const conn = peer.connect(peerShareCode!);
       conn?.on('data', data => {
