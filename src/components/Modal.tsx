@@ -3,7 +3,7 @@ import Button from './Button.tsx';
 
 interface ButtonProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClick: () => void;
   header: string;
   message: string;
   buttonValue: string | undefined;
@@ -11,7 +11,7 @@ interface ButtonProps {
 
 export default function Modal({
   isOpen,
-  onClose,
+  onClick,
   header,
   message,
   buttonValue,
@@ -24,7 +24,7 @@ export default function Modal({
         <h2>{header}</h2>
         <p>{message}</p>
         {buttonValue === undefined ? null : (
-          <Button onClick={onClose} value={buttonValue} />
+          <Button onClick={onClick} value={buttonValue} />
         )}
       </div>
     </div>

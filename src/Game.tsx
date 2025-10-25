@@ -36,10 +36,11 @@ function Game() {
     shareCode ? 'remote' : undefined,
   );
   const [botThinking, setBotThinking] = useState<boolean>(false);
-  const [_, setPeerConnected] = useState<boolean>(false);
+  const [, setPeerConnected] = useState<boolean>(false);
   const [shareLink, setShareLink] = useState<string | undefined>(undefined);
   const [showWinnerModal, setShowWinnerModal] = useState<boolean>(false);
   const [showPeerModal, setShowPeerModal] = useState<boolean>(false);
+  const [, setCopied] = useState(false);
   const { width, height } = useWindowSize();
 
   useHostPeerConnection({
@@ -54,6 +55,20 @@ function Game() {
     setShowPeerModal,
     showPeerModal,
   });
+
+  function handleCopy() {
+    setShowPeerModal(false);
+    if (!shareLink) return;
+    navigator.clipboard
+      .writeText(shareLink)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(err => {
+        console.error('Sorry could not copy, ', err);
+      });
+  }
 
   function playLocalButtonHandler() {
     console.log('playLocalButtonHandler');
@@ -169,10 +184,10 @@ function Game() {
       <>
         <Modal
           isOpen={showPeerModal}
-          onClose={() => setShowPeerModal(false)}
+          onClick={() => handleCopy()}
           header={shareLink ? 'share this link with your friend' : 'waiting'}
           message={shareLink || 'ask your friend for a share link'}
-          buttonValue="OK"
+          buttonValue={shareLink ? 'copy to clipboard' : 'ok'}
         />
       </>
     );
@@ -221,7 +236,7 @@ function Game() {
       />
       <Modal
         isOpen={showWinnerModal}
-        onClose={() => setShowWinnerModal(false)}
+        onClick={() => setShowWinnerModal(false)}
         header={
           localPlayerHasWon() ? 'congratulations, you win!' : 'congratulations!'
         }
