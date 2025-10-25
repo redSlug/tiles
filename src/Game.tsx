@@ -251,9 +251,9 @@ function Game() {
         <Confetti
           width={width}
           height={height}
-          numberOfPieces={Math.floor(Math.random() * 200 + 50)}
-          wind={0.002}
-          gravity={0.3}
+          numberOfPieces={Math.floor(Math.random() * 400 + 30)}
+          wind={Math.random() * 0.004 + 0.002}
+          gravity={Math.random() * 0.2 + 0.1}
           colors={getRandomColorPalette()}
         />
         {board}
