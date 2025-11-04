@@ -16,11 +16,13 @@ import {
   BOT_PLAYER_NUMBER,
   HUMAN_PLAYER_NUMBER,
   PEER_PLAYER_NUMBER,
+  BOT_AVAILABLE_MINUTES_PER_HOUR,
 } from './constants/all.ts';
 import { useWindowSize } from 'react-use';
 import Confetti from 'react-confetti';
 import {
   antiAddictionMessages,
+  getAffirmingQuotes,
   getOtherPlayer,
   getRandomColorPalette,
   getRandomElement,
@@ -41,6 +43,7 @@ function Game() {
   const [showWinnerModal, setShowWinnerModal] = useState<boolean>(false);
   const [showPeerModal, setShowPeerModal] = useState<boolean>(false);
   const [, setCopied] = useState(false);
+  const [showBotRestingModal, setShowBotRestingModal] = useState(false);
   const { width, height } = useWindowSize();
 
   useHostPeerConnection({
@@ -84,6 +87,12 @@ function Game() {
 
   function playBotButtonHandler() {
     console.log('playBotButtonHandler');
+
+    if (new Date().getMinutes() > BOT_AVAILABLE_MINUTES_PER_HOUR) {
+      setShowBotRestingModal(true);
+      return;
+    }
+
     setGameType('bot');
     setPlayerNumber(HUMAN_PLAYER_NUMBER);
   }
@@ -178,6 +187,18 @@ function Game() {
   }
 
   const titleString = getTitleString();
+
+  if (showBotRestingModal) {
+    return (
+      <Modal
+        isOpen={showBotRestingModal}
+        onClick={() => setShowBotRestingModal(false)}
+        header={'bot is resting'}
+        message={`come back the first ${BOT_AVAILABLE_MINUTES_PER_HOUR} minutes of any hour to start a game\n\n${getRandomElement(getAffirmingQuotes)}`}
+        buttonValue={'ok'}
+      />
+    );
+  }
 
   if (showPeerModal) {
     return (

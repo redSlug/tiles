@@ -11,3 +11,5 @@ export const HUMAN_PLAYER_NUMBER = 0;
 export const TILES_PER_FACTORY_GROUP = 4;
 
 export const INITIAL_FACTORY_GROUP_COUNT = 5;
+
+export const BOT_AVAILABLE_MINUTES_PER_HOUR = 15;
